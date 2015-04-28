@@ -1,4 +1,5 @@
 ﻿using SQLite.ORM.Columns;
+using SQLite.ORM.Columns.PropertyCollection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,12 @@ namespace SQLite.ORM
     {
         public TableMappingColumnFactory TableMappingColumnFactory { get; set; }
 
+        public PropertyCollector PropertyCollector { get; set; }
+
         public TableMappingConfiguration()
         {
             TableMappingColumnFactory = new BasicTableMappingColumnFactory();
+            PropertyCollector = new PropertyCollectorFactory().Create();
         }
     }
 }

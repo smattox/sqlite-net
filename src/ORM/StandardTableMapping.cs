@@ -26,15 +26,15 @@ namespace SQLite.ORM
 			var tableAttr = new TableAttributeCollectorFactory().Create().GetAttributesForType(type);
             TableName = tableAttr != null ? tableAttr.Name : MappedType.Name;
 
-            var typeProperties = new PropertyCollectorFactory().Create().Collect(type);
+            var typeProperties = configuration.PropertyCollector.Collect(type);
             var propertyAttributeChecker = new PropertyAttributeCheckerFactory().Create();
             var tableColumns = new List<TableMappingColumn>();
-            foreach (var p in typeProperties)
+            foreach (var property in typeProperties)
             {
-                if (p.CanWrite && !propertyAttributeChecker.PropertyHasAttribute(p, typeof(IgnoreAttribute)))
+                if (property.CanWrite && !propertyAttributeChecker.PropertyHasAttribute(property, typeof(IgnoreAttribute)))
                 {
                     tableColumns.Add(configuration.TableMappingColumnFactory.
-                        CreateColumnOnProperty(p, createFlags));
+                        CreateColumnOnProperty(property, createFlags));
                 }
             }
 

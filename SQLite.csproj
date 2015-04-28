@@ -41,6 +41,7 @@
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\PropertyAttributeChecker.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\PropertyAttributeCheckerFactory.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\NewAPIPropertyCollector.cs" />
+    <Compile Include="src\ORM\Columns\PropertyCollection\NullPropertyCollector.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\OldAPIPropertyCollector.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\PropertyCollector.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\PropertyCollectorFactory.cs" />

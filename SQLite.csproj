@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -33,28 +33,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AsyncTableQuery.cs" />
     <Compile Include="BaseTableQuery.cs" />
     <Compile Include="CreateFlags.cs" />
     <Compile Include="CreateTablesResult.cs" />
     <Compile Include="ListEx.cs" />
     <Compile Include="NotifyTableChangedEventArgs.cs" />
-    <Compile Include="NotNullConstraintViolationException.cs" />
+    <Compile Include="src\Exceptions\NotNullConstraintViolationException.cs" />
     <Compile Include="Orm.cs" />
-    <Compile Include="PreparedSqLiteInsertCommand.cs" />
+    <Compile Include="src\SQL\PreparedSqLiteInsertCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQLAttributes.cs" />
-    <Compile Include="SQLite3.cs" />
-    <Compile Include="SQLiteAsyncConnection.cs" />
-    <Compile Include="SQLiteCommand.cs" />
-    <Compile Include="SQLiteConnection.cs" />
-    <Compile Include="SQLiteConnectionPool.cs" />
-    <Compile Include="SQLiteConnectionString.cs" />
-    <Compile Include="SQLiteConnectionWithLock.cs" />
-    <Compile Include="SQLiteException.cs" />
-    <Compile Include="SQLiteOpenFlags.cs" />
+    <Compile Include="src\SQL\SQLAttributes.cs" />
+    <Compile Include="src\SQL\SQLite3.cs" />
+    <Compile Include="src\SQLiteAsyncConnection.cs" />
+    <Compile Include="src\SQL\SQLiteCommand.cs" />
+    <Compile Include="src\SQL\SQLiteConnection.cs" />
+    <Compile Include="src\SQL\SQLiteConnectionPool.cs" />
+    <Compile Include="src\SQL\SQLiteConnectionString.cs" />
+    <Compile Include="src\SQL\SQLiteConnectionWithLock.cs" />
+    <Compile Include="src\Exceptions\SQLiteException.cs" />
+    <Compile Include="src\SQL\SQLiteOpenFlags.cs" />
+    <Compile Include="src\AsyncTableQuery.cs" />
     <Compile Include="TableMapping.cs" />
     <Compile Include="TableQuery.cs" />
+  </ItemGroup>
+  <ItemGroup>
+  	<Folder Include="src\Async"/>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
@@ -73,8 +76,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Community.CsharpSqlite.WinPhone.dll" />
-    <Content Include="sqlite3.dll" />
+    <Content Include="lib\metro\ARM\sqlite3.dll" />
+    <Content Include="lib\metro\x64\sqlite3.dll" />
+    <Content Include="lib\metro\x86\sqlite3.dll" />
+    <Content Include="lib\wp7\Community.CsharpSqlite.WinPhone.dll" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 
 #if USE_CSHARP_SQLITE
@@ -293,7 +294,7 @@ namespace SQLite.SQL
                 else if (value.GetType().IsEnum)
                 {
 #else
-				} /* TODO else if (value.GetType().GetTypeInfo().IsEnum)*/ else if (false) {
+				} else if (value.GetType().GetTypeInfo().IsEnum) {
 #endif
                     SQLite3.BindInt(stmt, index, Convert.ToInt32(value));
                 }
@@ -373,7 +374,7 @@ namespace SQLite.SQL
                 else if (clrType.IsEnum)
                 {
 #else
-				} /* TODO */ else if (false) {
+				} else if (clrType.GetTypeInfo().IsEnum) {
 #endif
                     return SQLite3.ColumnInt(stmt, index);
                 }

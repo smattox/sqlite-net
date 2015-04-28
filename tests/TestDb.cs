@@ -67,7 +67,7 @@ namespace SQLite.Tests
 			var name = Guid.NewGuid () + ".sqlite";
 			return Path.Combine (Windows.Storage.ApplicationData.Current.LocalFolder.Path, name);
 #else
-			return Path.GetTempFileName ();
+			return Path.GetRandomFileName();
 #endif
 		}
 	}

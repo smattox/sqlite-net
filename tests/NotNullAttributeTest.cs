@@ -14,6 +14,7 @@ using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestCl
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #else
 using NUnit.Framework;
+using System.Diagnostics;
 #endif
 
 namespace SQLite.Tests
@@ -44,7 +45,7 @@ namespace SQLite.Tests
 
 		private IEnumerable<SQLiteConnection.ColumnInfo> GetExpectedColumnInfos (Type type)
 		{
-#if !NETFX_CORE
+#if !USE_NEW_REFLECTION_API
 			var expectedValues = from prop in type.GetProperties (BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
 								 select new SQLiteConnection.ColumnInfo {
 									 Name = prop.Name,
@@ -319,7 +320,7 @@ namespace SQLite.Tests
 		void Inconclusive ()
 		{
 #if !NETFX_CORE
-			Console.WriteLine ("Detailed constraint information is only available in SQLite3 version 3.7.17 and above.");
+			Debug.WriteLine ("Detailed constraint information is only available in SQLite3 version 3.7.17 and above.");
 #endif
 		}
 

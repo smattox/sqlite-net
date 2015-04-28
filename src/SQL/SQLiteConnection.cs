@@ -23,6 +23,11 @@ using System.Linq.Expressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using SQLite.ORM;
+using SQLite.Query;
+using SQLite.SQL;
+using SQLite.Exceptions;
+using SQLite.ORM.Columns;
 #endif
 
 namespace SQLite
@@ -52,6 +57,8 @@ namespace SQLite
         public bool Trace { get; set; }
 
         public bool StoreDateTimeAsTicks { get; private set; }
+
+        public TableMappingConfiguration TableMappingConfiguration { get; set; }
 
         /// <summary>
         /// Constructs a new SQLiteConnection and opens a SQLite database specified by databasePath.
@@ -108,6 +115,7 @@ namespace SQLite
             var databasePathAsBytes = GetNullTerminatedUtf8(DatabasePath);
             var r = SQLite3.Open(databasePathAsBytes, out handle, (int)openFlags, IntPtr.Zero);
 #endif
+            TableMappingConfiguration = new TableMappingConfiguration();
 
             Handle = handle;
             if (r != SQLite3.Result.OK)
@@ -210,7 +218,7 @@ namespace SQLite
             TableMapping map;
             if (!_mappings.TryGetValue(type.FullName, out map))
             {
-                map = new TableMapping(type, createFlags);
+                map = new StandardTableMapping(type, TableMappingConfiguration, createFlags);
                 _mappings[type.FullName] = map;
             }
             return map;
@@ -420,6 +428,7 @@ namespace SQLite
             {
                 mx = (property.Body as MemberExpression);
             }
+            // TODO: Will need to encompass fields
             var propertyInfo = mx.Member as PropertyInfo;
             if (propertyInfo == null)
             {
@@ -429,7 +438,7 @@ namespace SQLite
             var propName = propertyInfo.Name;
 
             var map = GetMapping<T>();
-            var colName = map.FindColumnWithPropertyName(propName).Name;
+            var colName = map.FindColumnWithTargetName(propName).Name;
 
             CreateIndex(map.TableName, colName, unique);
         }
@@ -466,7 +475,7 @@ namespace SQLite
         {
             var existingCols = GetTableInfo(map.TableName);
 
-            var toBeAdded = new List<TableMapping.Column>();
+            var toBeAdded = new List<TableMappingColumn>();
 
             foreach (var p in map.Columns)
             {
@@ -1287,42 +1296,14 @@ namespace SQLite
 
             var map = GetMapping(objType);
 
-#if USE_NEW_REFLECTION_API
-            if (map.PK != null && map.PK.IsAutoGuid)
+            if (map.PrimaryKey != null && map.HasAutoGuid)
             {
-                // no GetProperty so search our way up the inheritance chain till we find it
-                PropertyInfo prop;
-                while (objType != null)
+                if (map.PrimaryKey.GetValue(obj).Equals(Guid.Empty))
                 {
-                    var info = objType.GetTypeInfo();
-                    prop = info.GetDeclaredProperty(map.PK.PropertyName);
-                    if (prop != null) 
-                    {
-                        if (prop.GetValue(obj, null).Equals(Guid.Empty))
-                        {
-                            prop.SetValue(obj, Guid.NewGuid(), null);
-                        }
-                        break; 
-                    }
-
-                    objType = info.BaseType;
+                    map.PrimaryKey.SetValue(obj, Guid.NewGuid());
                 }
             }
-#else
-            if (map.PK != null && map.PK.IsAutoGuid)
-            {
-                var prop = objType.GetProperty(map.PK.PropertyName);
-                if (prop != null)
-                {
-                    if (prop.GetValue(obj, null).Equals(Guid.Empty))
-                    {
-                        prop.SetValue(obj, Guid.NewGuid(), null);
-                    }
-                }
-            }
-#endif
-
-
+            
             var replacing = string.Compare(extra, "OR REPLACE", StringComparison.OrdinalIgnoreCase) == 0;
 
             var cols = replacing ? map.InsertOrReplaceColumns : map.InsertColumns;
@@ -1355,11 +1336,11 @@ namespace SQLite
                 if (map.HasAutoIncPK)
                 {
                     var id = SQLite3.LastInsertRowid(Handle);
-                    map.SetAutoIncPK(obj, id);
+                    map.PrimaryKey.SetValue(obj, id);
                 }
             }
             if (count > 0)
-                OnTableChanged(map, SQLite.NotifyTableChangedEventArgs.NotifyTableChangedAction.Insert);
+                OnTableChanged(map, NotifyTableChangedEventArgs.NotifyTableChangedAction.Insert);
 
             return count;
         }
@@ -1408,7 +1389,7 @@ namespace SQLite
 
             var map = GetMapping(objType);
 
-            var pk = map.PK;
+            var pk = map.PrimaryKey;
 
             if (pk == null)
             {
@@ -1441,7 +1422,7 @@ namespace SQLite
             }
 
             if (rowsAffected > 0)
-                OnTableChanged(map, SQLite.NotifyTableChangedEventArgs.NotifyTableChangedAction.Update);
+                OnTableChanged(map, NotifyTableChangedEventArgs.NotifyTableChangedAction.Update);
 
             return rowsAffected;
         }
@@ -1493,7 +1474,7 @@ namespace SQLite
         public int Delete(object objectToDelete)
         {
             var map = GetMapping(objectToDelete.GetType());
-            var pk = map.PK;
+            var pk = map.PrimaryKey;
             if (pk == null)
             {
                 throw new NotSupportedException("Cannot delete " + map.TableName + ": it has no PK");
@@ -1501,7 +1482,7 @@ namespace SQLite
             var q = string.Format("delete from \"{0}\" where \"{1}\" = ?", map.TableName, pk.Name);
             var count = Execute(q, pk.GetValue(objectToDelete));
             if (count > 0)
-                OnTableChanged(map, SQLite.NotifyTableChangedEventArgs.NotifyTableChangedAction.Delete);
+                OnTableChanged(map, NotifyTableChangedEventArgs.NotifyTableChangedAction.Delete);
             return count;
         }
 
@@ -1520,7 +1501,7 @@ namespace SQLite
         public int Delete<T>(object primaryKey)
         {
             var map = GetMapping(typeof(T));
-            var pk = map.PK;
+            var pk = map.PrimaryKey;
             if (pk == null)
             {
                 throw new NotSupportedException("Cannot delete " + map.TableName + ": it has no PK");
@@ -1528,7 +1509,7 @@ namespace SQLite
             var q = string.Format("delete from \"{0}\" where \"{1}\" = ?", map.TableName, pk.Name);
             var count = Execute(q, primaryKey);
             if (count > 0)
-                OnTableChanged(map, SQLite.NotifyTableChangedEventArgs.NotifyTableChangedAction.Delete);
+                OnTableChanged(map, NotifyTableChangedEventArgs.NotifyTableChangedAction.Delete);
             return count;
         }
 
@@ -1549,7 +1530,7 @@ namespace SQLite
             var query = string.Format("delete from \"{0}\"", map.TableName);
             var count = Execute(query);
             if (count > 0)
-                OnTableChanged(map, SQLite.NotifyTableChangedEventArgs.NotifyTableChangedAction.Delete);
+                OnTableChanged(map, NotifyTableChangedEventArgs.NotifyTableChangedAction.Delete);
             return count;
         }
 
@@ -1597,7 +1578,7 @@ namespace SQLite
             }
         }
 
-        void OnTableChanged(TableMapping table, SQLite.NotifyTableChangedEventArgs.NotifyTableChangedAction action)
+        void OnTableChanged(TableMapping table, NotifyTableChangedEventArgs.NotifyTableChangedAction action)
         {
             var ev = TableChanged;
             if (ev != null)

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SQLite.ORM.Columns;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLite
+namespace SQLite.ORM
 {
     public static class Orm
     {
@@ -13,7 +14,7 @@ namespace SQLite
         public const string ImplicitPkName = "Id";
         public const string ImplicitIndexSuffix = "Id";
 
-        public static string SqlDecl(TableMapping.Column p, bool storeDateTimeAsTicks)
+        public static string SqlDecl(TableMappingColumn p, bool storeDateTimeAsTicks)
         {
             string decl = "\"" + p.Name + "\" " + SqlType(p, storeDateTimeAsTicks) + " ";
 
@@ -37,9 +38,9 @@ namespace SQLite
             return decl;
         }
 
-        public static string SqlType(TableMapping.Column p, bool storeDateTimeAsTicks)
+        public static string SqlType(TableMappingColumn p, bool storeDateTimeAsTicks)
         {
-            var clrType = p.ColumnType;
+            var clrType = p.TargetType;
             if (clrType == typeof(Boolean) || clrType == typeof(Byte) || clrType == typeof(UInt16) || clrType == typeof(SByte) || clrType == typeof(Int16) || clrType == typeof(Int32) || clrType == typeof(UInt32) || clrType == typeof(Int64))
             {
                 return "integer";

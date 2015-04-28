@@ -20,9 +20,11 @@ using Sqlite3 = SQLitePCL.raw;
 using Sqlite3DatabaseHandle = System.IntPtr;
 using Sqlite3Statement = System.IntPtr;
 using System.Diagnostics;
+using SQLite.SQL;
+using SQLite.Exceptions;
 #endif
 
-namespace SQLite
+namespace SQLite.SQL
 {
     /// <summary>
     /// Since the insert never changed, we only need to prepare once.

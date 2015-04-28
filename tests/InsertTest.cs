@@ -17,6 +17,7 @@ using NUnit.Framework;
 #endif
 
 using System.Diagnostics;
+using SQLite.Exceptions;
 
 namespace SQLite.Tests
 {    

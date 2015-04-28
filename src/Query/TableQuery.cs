@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SQLite.ORM;
+using SQLite.SQL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLite
+namespace SQLite.Query
 {
     public class TableQuery<T> : BaseTableQuery, IEnumerable<T>
     {
@@ -170,7 +172,7 @@ namespace SQLite
                     }
                     q._orderBys.Add(new Ordering
                     {
-                        ColumnName = Table.FindColumnWithPropertyName(mem.Member.Name).Name,
+                        ColumnName = Table.FindColumnWithTargetName(mem.Member.Name).Name,
                         Ascending = asc
                     });
                     return q;
@@ -392,7 +394,7 @@ namespace SQLite
                     // This is a column of our table, output just the column name
                     // Need to translate it if that column name is mapped
                     //
-                    var columnName = Table.FindColumnWithPropertyName(mem.Member.Name).Name;
+                    var columnName = Table.FindColumnWithTargetName(mem.Member.Name).Name;
                     return new CompileResult { CommandText = "\"" + columnName + "\"" };
                 }
                 else

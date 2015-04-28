@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SQLite.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLite
+namespace SQLite.Async
 {
     //
     // TODO: Bind to AsyncConnection.GetConnection instead so that delayed

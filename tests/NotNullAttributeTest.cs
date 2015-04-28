@@ -15,6 +15,8 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 #else
 using NUnit.Framework;
 using System.Diagnostics;
+using SQLite.Exceptions;
+using SQLite.ORM;
 #endif
 
 namespace SQLite.Tests
@@ -167,7 +169,7 @@ namespace SQLite.Tests
 				}
 				catch (NotNullConstraintViolationException ex) {
 					string expected = "AnotherRequiredStringProp, RequiredIntProp";
-					string actual = string.Join (", ", ex.Columns.Where (c => !c.IsPK).OrderBy (p => p.PropertyName).Select (c => c.PropertyName));
+					string actual = string.Join (", ", ex.Columns.Where (c => !c.IsPK).OrderBy (p => p.TargetName).Select (c => c.TargetName));
 
 					Assert.AreEqual (expected, actual, "NotNullConstraintViolationException did not correctly list the columns that violated the constraint");
 					return;
@@ -202,7 +204,7 @@ namespace SQLite.Tests
 					}
 					catch (NotNullConstraintViolationException ex) {
 						string expected = "RequiredStringProp";
-						string actual = string.Join (", ", ex.Columns.Where (c => !c.IsPK).OrderBy (p => p.PropertyName).Select (c => c.PropertyName));
+						string actual = string.Join (", ", ex.Columns.Where (c => !c.IsPK).OrderBy (p => p.TargetName).Select (c => c.TargetName));
 
 						Assert.AreEqual (expected, actual, "NotNullConstraintViolationException did not correctly list the columns that violated the constraint");
 

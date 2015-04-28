@@ -20,9 +20,12 @@ using Sqlite3 = SQLitePCL.raw;
 using Sqlite3DatabaseHandle = System.IntPtr;
 using Sqlite3Statement = System.IntPtr;
 using System.Diagnostics;
+using SQLite.ORM;
+using SQLite.Exceptions;
+using SQLite.ORM.Columns;
 #endif
 
-namespace SQLite
+namespace SQLite.SQL
 {
     public partial class SQLiteCommand
     {
@@ -112,7 +115,7 @@ namespace SQLite
             var stmt = Prepare();
             try
             {
-                var cols = new TableMapping.Column[SQLite3.ColumnCount(stmt)];
+                var cols = new TableMappingColumn[SQLite3.ColumnCount(stmt)];
 
                 for (int i = 0; i < cols.Length; i++)
                 {
@@ -128,7 +131,7 @@ namespace SQLite
                         if (cols[i] == null)
                             continue;
                         var colType = SQLite3.ColumnType(stmt, i);
-                        var val = ReadCol(stmt, i, colType, cols[i].ColumnType);
+                        var val = ReadCol(stmt, i, colType, cols[i].TargetType);
                         cols[i].SetValue(obj, val);
                     }
                     OnInstanceCreated(obj);

@@ -1,14 +1,16 @@
-﻿using System;
+﻿using SQLite.ORM;
+using SQLite.ORM.Columns;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLite
+namespace SQLite.Exceptions
 {
     public class NotNullConstraintViolationException : SQLiteException
     {
-        public IEnumerable<TableMapping.Column> Columns { get; protected set; }
+        public IEnumerable<TableMappingColumn> Columns { get; protected set; }
 
         protected NotNullConstraintViolationException(SQLite3.Result r, string message)
             : this(r, message, null, null)

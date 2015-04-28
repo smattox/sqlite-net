@@ -8,7 +8,7 @@ namespace SQLite.ORM.Columns.PropertyAttributeChecker
 {
     public class PropertyAttributeCheckerFactory
     {
-        public PropertyAttributeChecker Create()
+        public IPropertyAttributeChecker Create()
         {
 #if !USE_NEW_REFLECTION_API
             return new OldAPIPropertyAttributeChecker();

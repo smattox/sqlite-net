@@ -38,7 +38,7 @@
     <Compile Include="src\ORM\Columns\BasicTableMappingColumnFactory.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\NewAPIPropertyAttributeChecker.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\OldAPIPropertyAttributeChecker.cs" />
-    <Compile Include="src\ORM\Columns\PropertyAttributeChecker\PropertyAttributeChecker.cs" />
+    <Compile Include="src\ORM\Columns\PropertyAttributeChecker\IPropertyAttributeChecker.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\PropertyAttributeCheckerFactory.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\NewAPIPropertyCollector.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\NullPropertyCollector.cs" />
@@ -46,6 +46,7 @@
     <Compile Include="src\ORM\Columns\PropertyCollection\PropertyCollector.cs" />
     <Compile Include="src\ORM\Columns\PropertyCollection\PropertyCollectorFactory.cs" />
     <Compile Include="src\ORM\Columns\PropertyTypeTableMappingColumn.cs" />
+    <Compile Include="src\ORM\Columns\StandardPropertyCollector.cs" />
     <Compile Include="src\ORM\TableAttributeCollection\NewReflectionAPITableAttributeCollector.cs" />
     <Compile Include="src\ORM\TableAttributeCollection\OldReflectionAPITableAttributeCollector.cs" />
     <Compile Include="src\ORM\TableAttributeCollection\TableAttributeCollector.cs" />

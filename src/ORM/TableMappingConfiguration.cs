@@ -17,7 +17,7 @@ namespace SQLite.ORM
         public TableMappingConfiguration()
         {
             TableMappingColumnFactory = new BasicTableMappingColumnFactory();
-            PropertyCollector = new PropertyCollectorFactory().Create();
+            PropertyCollector = new StandardWrappedPublicPropertyCollector();
         }
     }
 }

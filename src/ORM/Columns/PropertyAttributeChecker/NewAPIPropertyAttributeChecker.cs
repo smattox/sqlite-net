@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns.PropertyAttributeChecker
 {
-    public class NewAPIPropertyAttributeChecker : PropertyAttributeChecker
+    public class NewAPIPropertyAttributeChecker : IPropertyAttributeChecker
     {
         public bool PropertyHasAttribute(PropertyInfo property, Type attribute)
         {

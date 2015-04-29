@@ -40,10 +40,10 @@ namespace SQLite.ORM
 
         public static string SqlType(TableMappingColumn column, bool storeDateTimeAsTicks = false)
         {
-            return SqlType(column.TargetType, storeDateTimeAsTicks);
+            return SqlType(column.TargetType, column.MaxStringLength, storeDateTimeAsTicks);
         }
 
-        public static string SqlType(Type clrType, bool storeDateTimeAsTicks = false)
+        public static string SqlType(Type clrType, int? maxLength = 0, bool storeDateTimeAsTicks = false)
         {
             if (clrType == typeof(Boolean) || clrType == typeof(Byte) || clrType == typeof(UInt16) || clrType == typeof(SByte) || clrType == typeof(Int16) || clrType == typeof(Int32) || clrType == typeof(UInt32) || clrType == typeof(Int64))
             {
@@ -55,7 +55,7 @@ namespace SQLite.ORM
             }
             else if (clrType == typeof(String))
             {
-                int? len = p.MaxStringLength;
+                int? len = maxLength;
 
                 if (len.HasValue)
                     return "varchar(" + len.Value + ")";

@@ -38,9 +38,13 @@ namespace SQLite.ORM
             return decl;
         }
 
-        public static string SqlType(TableMappingColumn p, bool storeDateTimeAsTicks)
+        public static string SqlType(TableMappingColumn column, bool storeDateTimeAsTicks = false)
         {
-            var clrType = p.TargetType;
+            return SqlType(column.TargetType, storeDateTimeAsTicks);
+        }
+
+        public static string SqlType(Type clrType, bool storeDateTimeAsTicks = false)
+        {
             if (clrType == typeof(Boolean) || clrType == typeof(Byte) || clrType == typeof(UInt16) || clrType == typeof(SByte) || clrType == typeof(Int16) || clrType == typeof(Int32) || clrType == typeof(UInt32) || clrType == typeof(Int64))
             {
                 return "integer";

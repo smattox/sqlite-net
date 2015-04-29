@@ -22,6 +22,7 @@ using Sqlite3Statement = System.IntPtr;
 using System.Diagnostics;
 using SQLite.SQL;
 using SQLite.Exceptions;
+using SQLite.SQLite;
 #endif
 
 namespace SQLite.SQL
@@ -65,7 +66,9 @@ namespace SQLite.SQL
             {
                 for (int i = 0; i < source.Length; i++)
                 {
-                    SQLiteCommand.BindParameter(Statement, i + 1, source[i], Connection.StoreDateTimeAsTicks);
+                    // TODO: Handle null case
+                    var sqlType = SQLite3.GetSQLiteType(source[i].GetType());
+                    sqlType.Bind(Statement, i + 1, source[i], Connection.StoreDateTimeAsTicks);
                 }
             }
             r = SQLite3.Step(Statement);

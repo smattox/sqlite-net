@@ -28,6 +28,7 @@ using SQLite.Query;
 using SQLite.SQL;
 using SQLite.Exceptions;
 using SQLite.ORM.Columns;
+using SQLite.SQLite;
 #endif
 
 namespace SQLite

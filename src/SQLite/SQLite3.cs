@@ -6,7 +6,18 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLite
+#if USE_CSHARP_SQLITE
+using Sqlite3Statement = Community.CsharpSqlite.Sqlite3.Vdbe;
+#elif USE_WP8_NATIVE_SQLITE
+using Sqlite3Statement = Sqlite.Statement;
+#elif USE_SQLITEPCL_RAW
+using Sqlite3Statement = SQLitePCL.sqlite3_stmt;
+#else
+using Sqlite3Statement = System.IntPtr;
+using SQLite.ORM;
+#endif
+
+namespace SQLite.SQLite
 {
     public static class SQLite3
 	{
@@ -101,6 +112,46 @@ namespace SQLite
 			MultiThread = 2,
 			Serialized = 3
 		}
+
+
+
+        private static string DATETIME = "datetime";
+        private static string INTEGER = "integer";
+        private static string BIG_INT = "bigint";
+        private static string VAR_CHAR = "varchar";
+        private static string FLOAT = "float";
+        private static string BLOB = "blob";
+
+        internal static IntPtr NegativePointer = new IntPtr(-1);
+
+        private static SQLiteType[] StandardTypes = {
+            new SQLiteType(clrType => clrType == typeof(Int32),    INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, (int)value), (stmt, index, date) => (int)SQLite3.ColumnInt(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(String),   (len, date) => VAR_CHAR + (len.HasValue ? "(" + len.Value + ")" : ""), (stmt, index, value, date) => SQLite3.BindText(stmt, index, (string)value, -1, NegativePointer),
+                (stmt, index, date) => SQLite3.ColumnString(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Byte),     INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, Convert.ToInt32(value)), (stmt, index, date) => (byte)SQLite3.ColumnInt(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(UInt16),   INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, Convert.ToInt32(value)), (stmt, index, date) => (ushort)SQLite3.ColumnInt(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(SByte),    INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, Convert.ToInt32(value)), (stmt, index, date) => (sbyte)SQLite3.ColumnInt(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Int16),    INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, Convert.ToInt32(value)), (stmt, index, date) => (short)SQLite3.ColumnInt(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Boolean),  INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, (bool)value ? 1 : 0),    (stmt, index, date) => SQLite3.ColumnInt(stmt, index) == 1),
+            new SQLiteType(clrType => clrType == typeof(UInt32),   BIG_INT, (stmt, index, value, date) => SQLite3.BindInt64(stmt, index, Convert.ToInt64(value)), (stmt, index, date) => (uint)SQLite3.ColumnInt64(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Int64),    BIG_INT, (stmt, index, value, date) => SQLite3.BindInt64(stmt, index, Convert.ToInt64(value)), (stmt, index, date) => SQLite3.ColumnInt64(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Single),   FLOAT,   (stmt, index, value, date) => SQLite3.BindDouble(stmt, index, Convert.ToDouble(value)), (stmt, index, date) => (float)SQLite3.ColumnDouble(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Double),   FLOAT,   (stmt, index, value, date) => SQLite3.BindDouble(stmt, index, Convert.ToDouble(value)), (stmt, index, date) => SQLite3.ColumnDouble(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Decimal),  FLOAT,   (stmt, index, value, date) => SQLite3.BindDouble(stmt, index, Convert.ToDouble(value)), (stmt, index, date) => (decimal)SQLite3.ColumnDouble(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(TimeSpan), BIG_INT, (stmt, index, value, date) => SQLite3.BindInt64(stmt, index, ((TimeSpan)value).Ticks), (stmt, index, date) => new TimeSpan(SQLite3.ColumnInt64(stmt, index))),
+            new SQLiteType(clrType => clrType == typeof(DateTime), (len, storeDateTimeAsTicks) => (storeDateTimeAsTicks ? BIG_INT : DATETIME), (stmt, index, value, dateAsTicks) =>
+                { if (dateAsTicks) SQLite3.BindInt64(stmt, index, ((DateTime)value).Ticks); else SQLite3.BindText(stmt, index, ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss"), -1, NegativePointer); },
+                (stmt, index, dateAsTicks) => dateAsTicks ? new DateTime(SQLite3.ColumnInt64(stmt, index)) : DateTime.Parse(SQLite3.ColumnString(stmt, index))),
+            new SQLiteType(clrType => clrType == typeof(DateTimeOffset), BIG_INT, (stmt, index, value, date) => SQLite3.BindInt64(stmt, index, ((DateTimeOffset)value).UtcTicks), (stmt, index, date) => new DateTimeOffset(SQLite3.ColumnInt64(stmt, index), TimeSpan.Zero)),
+            new SQLiteType(clrType => ORMUtilitiesHelperFactory.Create().IsEnum(clrType), INTEGER, (stmt, index, value, date) => SQLite3.BindInt(stmt, index, Convert.ToInt32(value)), (stmt, index, date) => SQLite3.ColumnInt(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(byte[]), BLOB, (stmt, index, value, date) => SQLite3.BindBlob(stmt, index, (byte[])value, ((byte[])value).Length, NegativePointer), (stmt, index, date) => SQLite3.ColumnByteArray(stmt, index)),
+            new SQLiteType(clrType => clrType == typeof(Guid), VAR_CHAR + "(36)", (stmt, index, value, date) => SQLite3.BindText(stmt, index, ((Guid)value).ToString(), 72, NegativePointer), (stmt, index, date) => new Guid(SQLite3.ColumnString(stmt, index)))
+        };
+
+        public static SQLiteType GetSQLiteType(Type clrType)
+        {
+            return StandardTypes.FirstOrDefault(map => map.Satisfies(clrType));
+        }
 
 #if !USE_CSHARP_SQLITE && !USE_WP8_NATIVE_SQLITE && !USE_SQLITEPCL_RAW
 		[DllImport("sqlite3", EntryPoint = "sqlite3_threadsafe", CallingConvention=CallingConvention.Cdecl)]

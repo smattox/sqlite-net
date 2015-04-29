@@ -1,5 +1,6 @@
 ﻿using SQLite.ORM;
 using SQLite.ORM.Columns;
+using SQLite.SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;

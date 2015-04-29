@@ -70,27 +70,28 @@
     <Compile Include="src\ORM\Columns\TableMappingColumnFactory.cs" />
     <Compile Include="src\ORM\TableMappingConfiguration.cs" />
     <Compile Include="src\Query\BaseTableQuery.cs" />
-    <Compile Include="src\SQL\CreateFlags.cs" />
-    <Compile Include="src\SQL\CreateTablesResult.cs" />
+    <Compile Include="src\SQLite\CreateFlags.cs" />
+    <Compile Include="src\SQLite\CreateTablesResult.cs" />
     <Compile Include="src\Misc\ListEx.cs" />
     <Compile Include="src\Query\NotifyTableChangedEventArgs.cs" />
     <Compile Include="src\Exceptions\NotNullConstraintViolationException.cs" />
     <Compile Include="src\ORM\ORMUtilities.cs" />
-    <Compile Include="src\SQL\PreparedSqLiteInsertCommand.cs" />
+    <Compile Include="src\SQLite\PreparedSqLiteInsertCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\SQL\SQLAttributes.cs" />
-    <Compile Include="src\SQL\SQLite3.cs" />
+    <Compile Include="src\SQLite\SQLAttributes.cs" />
+    <Compile Include="src\SQLite\SQLite3.cs" />
     <Compile Include="src\Async\SQLiteAsyncConnection.cs" />
-    <Compile Include="src\SQL\SQLiteCommand.cs" />
-    <Compile Include="src\SQL\SQLiteConnection.cs" />
-    <Compile Include="src\SQL\SQLiteConnectionPool.cs" />
-    <Compile Include="src\SQL\SQLiteConnectionString.cs" />
-    <Compile Include="src\SQL\SQLiteConnectionWithLock.cs" />
+    <Compile Include="src\SQLite\SQLiteCommand.cs" />
+    <Compile Include="src\SQLite\SQLiteConnection.cs" />
+    <Compile Include="src\SQLite\SQLiteConnectionPool.cs" />
+    <Compile Include="src\SQLite\SQLiteConnectionString.cs" />
+    <Compile Include="src\SQLite\SQLiteConnectionWithLock.cs" />
     <Compile Include="src\Exceptions\SQLiteException.cs" />
-    <Compile Include="src\SQL\SQLiteOpenFlags.cs" />
+    <Compile Include="src\SQLite\SQLiteOpenFlags.cs" />
     <Compile Include="src\Async\AsyncTableQuery.cs" />
     <Compile Include="src\ORM\StandardTableMapping.cs" />
     <Compile Include="src\Query\TableQuery.cs" />
+    <Compile Include="src\SQLite\SQLiteType.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

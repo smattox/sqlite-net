@@ -1,4 +1,5 @@
 ﻿using SQLite.ORM.Columns;
+using SQLite.SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,25 +14,6 @@ namespace SQLite.ORM
         public const int DefaultMaxStringLength = 140;
         public const string ImplicitPkName = "Id";
         public const string ImplicitIndexSuffix = "Id";
-
-        private static string DATETIME = "datetime";
-        private static string INTEGER = "integer";
-        private static string BIG_INT = "bigint";
-        private static string VAR_CHAR = "varchar";
-        private static string FLOAT = "float";
-        private static string BLOB = "blob";
-
-        private static SqlMapper[] StandardTypes = {
-            new SqlMapper(clrType => clrType == typeof(Boolean) || clrType == typeof(Byte) || clrType == typeof(UInt16) || clrType == typeof(SByte) || clrType == typeof(Int16) || clrType == typeof(Int32) || clrType == typeof(UInt32) || clrType == typeof(Int64), INTEGER),
-            new SqlMapper(clrType => clrType == typeof(Single) || clrType == typeof(Double) || clrType == typeof(Decimal), FLOAT),
-            new SqlMapper(clrType => clrType == typeof(String), (len, date) => VAR_CHAR + (len.HasValue ? "(" + len.Value + ")" : "")),
-            new SqlMapper(clrType => clrType == typeof(TimeSpan), BIG_INT),
-            new SqlMapper(clrType => clrType == typeof(DateTime), (len, storeDateTimeAsTicks) => storeDateTimeAsTicks ? BIG_INT : DATETIME),
-            new SqlMapper(clrType => clrType == typeof(DateTimeOffset), BIG_INT),
-            new SqlMapper(clrType => ORMUtilitiesHelperFactory.Create().IsEnum(clrType), INTEGER),
-            new SqlMapper(clrType => clrType == typeof(byte[]), BLOB),
-            new SqlMapper(clrType => clrType == typeof(Guid), VAR_CHAR + "(36)")
-        };
 
         public static TableMappingColumn[] GetColumnsOnType(Type type, TableMappingConfiguration configuration, CreateFlags createFlags, string path)
         {
@@ -79,7 +61,7 @@ namespace SQLite.ORM
 
         public static string SqlType(Type clrType, int? maxLength = DefaultMaxStringLength, bool storeDateTimeAsTicks = false)
         {
-            var type = StandardTypes.FirstOrDefault(map => map.Satisfies(clrType));
+            var type = SQLite3.GetSQLiteType(clrType);
 
             if (type != null)
             {
@@ -90,7 +72,7 @@ namespace SQLite.ORM
 
         public static bool IsSimpleSQLType(Type clrType)
         {
-            return StandardTypes.FirstOrDefault(map => map.Satisfies(clrType)) != null;
+            return SQLite3.GetSQLiteType(clrType) != null;
         }
 
         public static bool IsPrimaryKey(MemberInfo info)
@@ -135,33 +117,6 @@ namespace SQLite.ORM
         public static bool IsMarkedNotNull(MemberInfo info)
         {
             return ORMUtilitiesHelperFactory.Create().GetAttribute<NotNullAttribute>(info) != null;
-        }
-
-        private class SqlMapper
-        {
-            private Func<Type, bool> Condition;
-            private Func<int?, bool, string> SQL;
-
-            public SqlMapper(Func<Type, bool> condition, string sql) :
-                this(condition, (len, date) => sql)
-            {
-            }
-
-            public SqlMapper(Func<Type, bool> condition, Func<int?, bool, string> sql)
-            {
-                Condition = condition;
-                SQL = sql;
-            }
-
-            public bool Satisfies(Type type)
-            {
-                return Condition.Invoke(type);
-            }
-
-            public string GetSQL(int? maxLen, bool storeDateTimeAsTicks)
-            {
-                return SQL.Invoke(maxLen, storeDateTimeAsTicks);
-            }
         }
     }
 }

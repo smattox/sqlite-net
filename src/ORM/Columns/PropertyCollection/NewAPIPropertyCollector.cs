@@ -5,13 +5,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+#if USE_NEW_REFLECTION_API
 namespace SQLite.ORM.Columns.PropertyCollection
 {
     public class NewAPIPropertyCollector : PropertyCollector
     {
         public PropertyInfo[] Collect(Type type)
         {
-#if USE_NEW_REFLECTION_API
+
             var properties = new List<PropertyInfo>();
             foreach (PropertyInfo p in type.GetRuntimeProperties())
             {
@@ -24,9 +25,7 @@ namespace SQLite.ORM.Columns.PropertyCollection
                    where ((p.GetMethod != null && p.GetMethod.IsPublic) || (p.SetMethod != null && p.SetMethod.IsPublic) || (p.GetMethod != null && p.GetMethod.IsStatic) || (p.SetMethod != null && p.SetMethod.IsStatic))
                    select p;*/
             return properties.ToArray();
-#else
-            return new PropertyInfo[0];
-#endif
         }
     }
 }
+#endif

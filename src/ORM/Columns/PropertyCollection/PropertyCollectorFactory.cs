@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns.PropertyCollection
 {
-    public class PropertyCollectorFactory
+    public static class PropertyCollectorFactory
     {
-        public PropertyCollector Create()
+        public static PropertyCollector Create()
         {
 #if USE_NEW_REFLECTION_API
             return new NewAPIPropertyCollector();

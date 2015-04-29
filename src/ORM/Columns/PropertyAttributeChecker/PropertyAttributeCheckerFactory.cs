@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns.PropertyAttributeChecker
 {
-    public class PropertyAttributeCheckerFactory
+    public static class PropertyAttributeCheckerFactory
     {
-        public IPropertyAttributeChecker Create()
+        public static IPropertyAttributeChecker Create()
         {
 #if !USE_NEW_REFLECTION_API
             return new OldAPIPropertyAttributeChecker();

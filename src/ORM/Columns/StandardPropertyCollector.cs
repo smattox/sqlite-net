@@ -15,8 +15,8 @@ namespace SQLite.ORM.Columns
         private IPropertyAttributeChecker checker;
 
         public StandardWrappedPublicPropertyCollector() :
-            this(new PropertyCollectorFactory().Create(),
-                 new PropertyAttributeCheckerFactory().Create()) { }
+            this(PropertyCollectorFactory.Create(),
+                 PropertyAttributeCheckerFactory.Create()) { }
 
         public StandardWrappedPublicPropertyCollector(PropertyCollector collector,
             IPropertyAttributeChecker checker)

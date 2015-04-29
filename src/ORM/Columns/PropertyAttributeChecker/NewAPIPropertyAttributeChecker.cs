@@ -5,17 +5,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+#if USE_NEW_REFLECTION_API
 namespace SQLite.ORM.Columns.PropertyAttributeChecker
 {
     public class NewAPIPropertyAttributeChecker : IPropertyAttributeChecker
     {
         public bool PropertyHasAttribute(PropertyInfo property, Type attribute)
         {
-#if USE_NEW_REFLECTION_API
+
             return property.GetCustomAttributes(attribute, true).Count() > 0;
-#else
-            return false
-#endif
         }
     }
 }
+#endif

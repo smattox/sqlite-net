@@ -12,9 +12,17 @@ namespace SQLite.ORM.Columns.PropertyCollection
         public PropertyInfo[] Collect(Type type)
         {
 #if USE_NEW_REFLECTION_API
-            var properties = from p in type.GetRuntimeProperties()
+            var properties = new List<PropertyInfo>();
+            foreach (PropertyInfo p in type.GetRuntimeProperties())
+            {
+                if ((p.GetMethod != null && p.GetMethod.IsPublic) || (p.SetMethod != null && p.SetMethod.IsPublic) || (p.GetMethod != null && p.GetMethod.IsStatic) || (p.SetMethod != null && p.SetMethod.IsStatic))
+                {
+                    properties.Add(p);
+                }
+            }
+            /*var properties = from p in type.GetRuntimeProperties()
                    where ((p.GetMethod != null && p.GetMethod.IsPublic) || (p.SetMethod != null && p.SetMethod.IsPublic) || (p.GetMethod != null && p.GetMethod.IsStatic) || (p.SetMethod != null && p.SetMethod.IsStatic))
-                   select p;
+                   select p;*/
             return properties.ToArray();
 #else
             return new PropertyInfo[0];

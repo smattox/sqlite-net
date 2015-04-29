@@ -13,5 +13,10 @@ namespace SQLite.ORM.Columns
         {
             return new PropertyTypeTableMappingColumn(property, createFlags);
         }
+
+        public TableMappingColumn CreateColumnOnField(FieldInfo field, CreateFlags createFlags)
+        {
+            return new FieldTypeTableMappingColumn(field, createFlags);
+        }
     }
 }

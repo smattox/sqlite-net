@@ -17,7 +17,7 @@ namespace SQLite
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class ColumnAttribute : Attribute
     {
         public string Name { get; set; }
@@ -28,17 +28,17 @@ namespace SQLite
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class PrimaryKeyAttribute : Attribute
     {
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class AutoIncrementAttribute : Attribute
     {
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class IndexedAttribute : Attribute
     {
         public string Name { get; set; }
@@ -56,12 +56,12 @@ namespace SQLite
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class IgnoreAttribute : Attribute
     {
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class UniqueAttribute : IndexedAttribute
     {
         public override bool Unique
@@ -71,7 +71,7 @@ namespace SQLite
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class MaxLengthAttribute : Attribute
     {
         public int Value { get; private set; }
@@ -82,7 +82,7 @@ namespace SQLite
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class CollationAttribute : Attribute
     {
         public string Value { get; private set; }
@@ -93,7 +93,7 @@ namespace SQLite
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class NotNullAttribute : Attribute
     {
     }

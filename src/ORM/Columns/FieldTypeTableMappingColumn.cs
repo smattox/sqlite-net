@@ -7,27 +7,27 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns
 {
-    public class PropertyTypeTableMappingColumn : AbstractTableMappingColumn
+    public class FieldTypeTableMappingColumn : AbstractTableMappingColumn
     {
-        private PropertyInfo _prop;
+        private FieldInfo _field;
 
-        public PropertyTypeTableMappingColumn(PropertyInfo prop, CreateFlags createFlags = CreateFlags.None)
-            : base(prop, createFlags)
+        public FieldTypeTableMappingColumn(FieldInfo field, CreateFlags createFlags = CreateFlags.None)
+            : base(field, createFlags)
         {
-            _prop = prop;
+            _field = field;
 
             //If this type is Nullable<T> then Nullable.GetUnderlyingType returns the T, otherwise it returns null, so get the actual type instead
-            TargetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+            TargetType = Nullable.GetUnderlyingType(field.FieldType) ?? field.FieldType;
         }
 
         public override void SetValue(object obj, object val)
         {
-            _prop.SetValue(obj, val, null);
+            _field.SetValue(obj, val);
         }
 
         public override object GetValue(object obj)
         {
-            return _prop.GetValue(obj, null);
+            return _field.GetValue(obj);
         }
     }
 }

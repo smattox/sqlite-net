@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM
 {
-    public static class Orm
+    public static class ORMUtilities
     {
         public const int DefaultMaxStringLength = 140;
         public const string ImplicitPkName = "Id";
@@ -69,13 +69,7 @@ namespace SQLite.ORM
             else if (clrType == typeof(DateTimeOffset))
             {
                 return "bigint";
-#if !USE_NEW_REFLECTION_API
-            }
-            else if (clrType.IsEnum)
-            {
-#else
-			} else if (clrType.GetTypeInfo().IsEnum) {
-#endif
+            } else if (ORMUtilitiesHelperFactory.Create().IsEnum(clrType)) {
                 return "integer";
             }
             else if (clrType == typeof(byte[]))
@@ -92,27 +86,17 @@ namespace SQLite.ORM
             }
         }
 
-        public static bool IsPK(MemberInfo p)
+        public static bool IsPrimaryKey(MemberInfo info)
         {
-            var attrs = p.GetCustomAttributes(typeof(PrimaryKeyAttribute), true);
-#if !USE_NEW_REFLECTION_API
-            return attrs.Length > 0;
-#else
-			return attrs.Count() > 0;
-#endif
+            return ORMUtilitiesHelperFactory.Create().GetAttribute<PrimaryKeyAttribute>(info) != null;
         }
 
-        public static string Collation(MemberInfo p)
+        public static string Collation(MemberInfo info)
         {
-            var attrs = p.GetCustomAttributes(typeof(CollationAttribute), true);
-#if !USE_NEW_REFLECTION_API
-            if (attrs.Length > 0)
+            var attribute = ORMUtilitiesHelperFactory.Create().GetAttribute<CollationAttribute>(info);
+            if (attribute != null)
             {
-                return ((CollationAttribute)attrs[0]).Value;
-#else
-			if (attrs.Count() > 0) {
-                return ((CollationAttribute)attrs.First()).Value;
-#endif
+                return attribute.Value;
             }
             else
             {
@@ -120,44 +104,30 @@ namespace SQLite.ORM
             }
         }
 
-        public static bool IsAutoInc(MemberInfo p)
+        public static bool IsAutoInc(MemberInfo info)
         {
-            var attrs = p.GetCustomAttributes(typeof(AutoIncrementAttribute), true);
-#if !USE_NEW_REFLECTION_API
-            return attrs.Length > 0;
-#else
-			return attrs.Count() > 0;
-#endif
+            return ORMUtilitiesHelperFactory.Create().GetAttribute<AutoIncrementAttribute>(info) != null;
         }
 
-        public static IEnumerable<IndexedAttribute> GetIndices(MemberInfo p)
+        public static IEnumerable<IndexedAttribute> GetIndices(MemberInfo info)
         {
-            var attrs = p.GetCustomAttributes(typeof(IndexedAttribute), true);
+            var attrs = info.GetCustomAttributes(typeof(IndexedAttribute), true);
             return attrs.Cast<IndexedAttribute>();
         }
 
-        public static int? MaxStringLength(PropertyInfo p)
+        public static int? MaxStringLength(MemberInfo info)
         {
-            var attrs = p.GetCustomAttributes(typeof(MaxLengthAttribute), true);
-#if !USE_NEW_REFLECTION_API
-            if (attrs.Length > 0)
-                return ((MaxLengthAttribute)attrs[0]).Value;
-#else
-			if (attrs.Count() > 0)
-				return ((MaxLengthAttribute)attrs.First()).Value;
-#endif
-
+            var attribute = ORMUtilitiesHelperFactory.Create().GetAttribute<MaxLengthAttribute>(info);
+            if (attribute != null)
+            {
+                return attribute.Value;
+            }
             return null;
         }
 
-        public static bool IsMarkedNotNull(MemberInfo p)
+        public static bool IsMarkedNotNull(MemberInfo info)
         {
-            var attrs = p.GetCustomAttributes(typeof(NotNullAttribute), true);
-#if !USE_NEW_REFLECTION_API
-            return attrs.Length > 0;
-#else
-	return attrs.Count() > 0;
-#endif
+            return ORMUtilitiesHelperFactory.Create().GetAttribute<NotNullAttribute>(info) != null;
         }
     }
 }

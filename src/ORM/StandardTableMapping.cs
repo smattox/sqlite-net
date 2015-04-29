@@ -32,6 +32,10 @@ namespace SQLite.ORM
             {
                 tableColumns.Add(configuration.TableMappingColumnFactory.CreateColumnOnProperty(property, createFlags));
             }
+            foreach (var field in configuration.FieldCollector.Collect(type))
+            {
+                tableColumns.Add(configuration.TableMappingColumnFactory.CreateColumnOnField(field, createFlags));
+            }
 
             Columns = tableColumns.ToArray();
 

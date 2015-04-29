@@ -10,5 +10,7 @@ namespace SQLite.ORM.Columns
     public interface TableMappingColumnFactory
     {
         TableMappingColumn CreateColumnOnProperty(PropertyInfo property, CreateFlags flags);
+
+        TableMappingColumn CreateColumnOnField(FieldInfo field, CreateFlags flags);
     }
 }

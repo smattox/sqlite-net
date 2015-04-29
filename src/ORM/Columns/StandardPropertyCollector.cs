@@ -28,9 +28,7 @@ namespace SQLite.ORM.Columns
         public PropertyInfo[] Collect(Type type)
         {
             return innerCollector.Collect(type).Where(property => property.CanWrite &&
-                checker.PropertyHasAttribute(property, typeof(IgnoreAttribute))).ToArray();
+                !checker.PropertyHasAttribute(property, typeof(IgnoreAttribute))).ToArray();
         }
-
-
     }
 }

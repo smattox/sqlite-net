@@ -1,4 +1,5 @@
 ﻿using SQLite.ORM.Columns;
+using SQLite.ORM.Columns.FieldCollection;
 using SQLite.ORM.Columns.PropertyCollection;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,13 @@ namespace SQLite.ORM
 
         public PropertyCollector PropertyCollector { get; set; }
 
+        public FieldCollector FieldCollector { get; set; }
+
         public TableMappingConfiguration()
         {
             TableMappingColumnFactory = new BasicTableMappingColumnFactory();
             PropertyCollector = new StandardWrappedPublicPropertyCollector();
+            FieldCollector = new NullFieldCollector();
         }
     }
 }

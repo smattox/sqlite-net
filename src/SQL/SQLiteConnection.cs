@@ -309,7 +309,7 @@ namespace SQLite
 
             // Build query.
             var query = "create " + @virtual + "table if not exists \"" + map.TableName + "\" " + @using + "(\n";
-            var decls = map.Columns.Select(p => Orm.SqlDecl(p, StoreDateTimeAsTicks));
+            var decls = map.Columns.Select(p => ORMUtilities.SqlDecl(p, StoreDateTimeAsTicks));
             var decl = string.Join(",\n", decls.ToArray());
             query += decl;
             query += ")";
@@ -494,7 +494,7 @@ namespace SQLite
 
             foreach (var p in toBeAdded)
             {
-                var addCol = "alter table \"" + map.TableName + "\" add column " + Orm.SqlDecl(p, StoreDateTimeAsTicks);
+                var addCol = "alter table \"" + map.TableName + "\" add column " + ORMUtilities.SqlDecl(p, StoreDateTimeAsTicks);
                 Execute(addCol);
             }
         }

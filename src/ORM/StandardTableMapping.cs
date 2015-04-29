@@ -30,11 +30,11 @@ namespace SQLite.ORM
 
             foreach (var property in configuration.PropertyCollector.Collect(type))
             {
-                tableColumns.Add(configuration.TableMappingColumnFactory.CreateColumnOnProperty(property, createFlags));
+                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnProperty(property, createFlags));
             }
             foreach (var field in configuration.FieldCollector.Collect(type))
             {
-                tableColumns.Add(configuration.TableMappingColumnFactory.CreateColumnOnField(field, createFlags));
+                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnField(field, createFlags));
             }
 
             Columns = tableColumns.ToArray();

@@ -9,19 +9,20 @@ namespace SQLite.ORM.Columns
 {
     public class ComplexTableMappingColumnFactory : TableMappingColumnFactory
     {
-        public TableMappingColumn[] CreateColumnsOnProperty(PropertyInfo property, CreateFlags createFlags)
-        {
-            return Analyze(property, createFlags);
-        }
+        private BasicTableMappingColumnFactory simpleTypesFactory = new BasicTableMappingColumnFactory();
 
-        public TableMappingColumn[] CreateColumnsOnField(FieldInfo field, CreateFlags createFlags)
+        public TableMappingColumn[] CreateColumnsOnMember(MemberInfo info, CreateFlags flags)
         {
-            return Analyze(field, createFlags);
-        }
+            Type targetType = null;
+            if (info is PropertyInfo) targetType = (info as PropertyInfo).PropertyType;
+            if (info is FieldInfo) targetType = (info as FieldInfo).FieldType;
+            if (info == null) throw new InvalidOperationException("What is " + info.Name + "?");
 
-        private TableMappingColumn[] Analyze(MemberInfo info, CreateFlags flags)
-        {
-            return new TableMappingColumn[0];
+            if (ORMUtilities.IsSimpleSQLType(targetType))
+            {
+                return simpleTypesFactory.CreateColumnsOnMember(info, flags);
+            }
+            return null;
         }
     }
 }

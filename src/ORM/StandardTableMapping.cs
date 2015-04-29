@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using ConcurrentStringDictionary = System.Collections.Generic.Dictionary<string, object>;
 #else
 using ConcurrentStringDictionary = System.Collections.Concurrent.ConcurrentDictionary<string, object>;
+using System.Reflection;
 #endif
 
 namespace SQLite.ORM
@@ -27,14 +28,13 @@ namespace SQLite.ORM
             TableName = tableAttr != null ? tableAttr.Name : MappedType.Name;
 
             var tableColumns = new List<TableMappingColumn>();
+            List<MemberInfo> eligibleMembers = new List<MemberInfo>();
+            eligibleMembers.AddRange(configuration.PropertyCollector.Collect(type));
+            eligibleMembers.AddRange(configuration.FieldCollector.Collect(type));
 
-            foreach (var property in configuration.PropertyCollector.Collect(type))
+            foreach (var info in eligibleMembers )
             {
-                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnProperty(property, createFlags));
-            }
-            foreach (var field in configuration.FieldCollector.Collect(type))
-            {
-                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnField(field, createFlags));
+                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnMember(info, createFlags));
             }
 
             Columns = tableColumns.ToArray();

@@ -27,17 +27,7 @@ namespace SQLite.ORM
 			var tableAttr = new TableAttributeCollectorFactory().Create().GetAttributesForType(type);
             TableName = tableAttr != null ? tableAttr.Name : MappedType.Name;
 
-            var tableColumns = new List<TableMappingColumn>();
-            List<MemberInfo> eligibleMembers = new List<MemberInfo>();
-            eligibleMembers.AddRange(configuration.PropertyCollector.Collect(type));
-            eligibleMembers.AddRange(configuration.FieldCollector.Collect(type));
-
-            foreach (var info in eligibleMembers )
-            {
-                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnMember(info, createFlags));
-            }
-
-            Columns = tableColumns.ToArray();
+            Columns = ORMUtilities.GetColumnsOnType(type, configuration, createFlags, "");
 
             _autoPk = Columns.FirstOrDefault(column => column.IsAutoInc && column.IsPK);
             PrimaryKey = Columns.FirstOrDefault(column => column.IsPK);

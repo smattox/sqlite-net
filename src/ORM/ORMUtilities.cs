@@ -33,6 +33,21 @@ namespace SQLite.ORM
             new SqlMapper(clrType => clrType == typeof(Guid), VAR_CHAR + "(36)")
         };
 
+        public static TableMappingColumn[] GetColumnsOnType(Type type, TableMappingConfiguration configuration, CreateFlags createFlags, string path)
+        {
+            var tableColumns = new List<TableMappingColumn>();
+            List<MemberInfo> eligibleMembers = new List<MemberInfo>();
+            eligibleMembers.AddRange(configuration.PropertyCollector.Collect(type));
+            eligibleMembers.AddRange(configuration.FieldCollector.Collect(type));
+
+            foreach (var info in eligibleMembers)
+            {
+                tableColumns.AddRange(configuration.TableMappingColumnFactory.CreateColumnsOnMember(info, configuration, createFlags, path));
+            }
+
+            return tableColumns.ToArray();
+        }
+
         public static string SqlDecl(TableMappingColumn p, bool storeDateTimeAsTicks)
         {
             string decl = "\"" + p.Name + "\" " + SqlType(p, storeDateTimeAsTicks) + " ";

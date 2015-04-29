@@ -9,6 +9,10 @@ namespace SQLite.ORM.Columns
 {
     public interface TableMappingColumnFactory
     {
-        TableMappingColumn[] CreateColumnsOnMember(MemberInfo info, CreateFlags flags);
+        TableMappingColumn[] CreateColumnsOnMember(
+            MemberInfo info,
+            TableMappingConfiguration configuration,
+            CreateFlags flags,
+            string path);
     }
 }

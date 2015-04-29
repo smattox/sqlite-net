@@ -11,8 +11,8 @@ namespace SQLite.ORM.Columns
     {
         private FieldInfo _field;
 
-        public FieldTypeTableMappingColumn(FieldInfo field, CreateFlags createFlags = CreateFlags.None)
-            : base(field, createFlags)
+        public FieldTypeTableMappingColumn(FieldInfo field, string path, CreateFlags createFlags = CreateFlags.None)
+            : base(field, path, createFlags)
         {
             _field = field;
 

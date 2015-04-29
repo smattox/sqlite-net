@@ -29,11 +29,11 @@ namespace SQLite.ORM.Columns
 
         public IEnumerable<IndexedAttribute> Indices { get; set; }
 
-        protected AbstractTableMappingColumn(MemberInfo info, CreateFlags createFlags = CreateFlags.None)
+        protected AbstractTableMappingColumn(MemberInfo info, string path, CreateFlags createFlags = CreateFlags.None)
         {
             var colAttr = (ColumnAttribute)info.GetCustomAttributes(typeof(ColumnAttribute), true).FirstOrDefault();
 
-            Name = colAttr == null ? info.Name : colAttr.Name;
+            Name = path + (colAttr == null ? info.Name : colAttr.Name);
             Collation = ORMUtilities.Collation(info);
 
             IsPK = ORMUtilities.IsPrimaryKey(info) ||

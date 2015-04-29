@@ -11,8 +11,8 @@ namespace SQLite.ORM.Columns
     {
         private PropertyInfo _prop;
 
-        public PropertyTypeTableMappingColumn(PropertyInfo prop, CreateFlags createFlags = CreateFlags.None)
-            : base(prop, createFlags)
+        public PropertyTypeTableMappingColumn(PropertyInfo prop, string path, CreateFlags createFlags = CreateFlags.None)
+            : base(prop, path, createFlags)
         {
             _prop = prop;
 

@@ -68,7 +68,6 @@
     <Compile Include="src\ORM\Columns\TableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\TableMappingColumnFactory.cs" />
     <Compile Include="src\ORM\TableMappingConfiguration.cs" />
-    <Compile Include="src\ORM\TableMappingFactory.cs" />
     <Compile Include="src\Query\BaseTableQuery.cs" />
     <Compile Include="src\SQL\CreateFlags.cs" />
     <Compile Include="src\SQL\CreateTablesResult.cs" />

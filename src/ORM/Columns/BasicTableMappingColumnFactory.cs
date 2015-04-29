@@ -9,14 +9,14 @@ namespace SQLite.ORM.Columns
 {
     public class BasicTableMappingColumnFactory : TableMappingColumnFactory
     {
-        public TableMappingColumn CreateColumnOnProperty(PropertyInfo property, CreateFlags createFlags)
+        public TableMappingColumn[] CreateColumnsOnProperty(PropertyInfo property, CreateFlags createFlags)
         {
-            return new PropertyTypeTableMappingColumn(property, createFlags);
+            return new TableMappingColumn[] { new PropertyTypeTableMappingColumn(property, createFlags) };
         }
 
-        public TableMappingColumn CreateColumnOnField(FieldInfo field, CreateFlags createFlags)
+        public TableMappingColumn[] CreateColumnsOnField(FieldInfo field, CreateFlags createFlags)
         {
-            return new FieldTypeTableMappingColumn(field, createFlags);
+            return new TableMappingColumn[] { new FieldTypeTableMappingColumn(field, createFlags) };
         }
     }
 }

@@ -46,6 +46,7 @@
     <Compile Include="src\ORM\Columns\FieldCollection\FieldCollectorFactory.cs" />
     <Compile Include="src\ORM\Columns\FieldCollection\NewAPIFieldCollector.cs" />
     <Compile Include="src\ORM\Columns\FieldCollection\NullFieldCollector.cs" />
+    <Compile Include="src\ORM\Columns\ListAdapterTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\NewAPIPropertyAttributeChecker.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\OldAPIPropertyAttributeChecker.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\IPropertyAttributeChecker.cs" />

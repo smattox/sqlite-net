@@ -210,17 +210,18 @@ namespace SQLite
         /// The mapping represents the schema of the columns of the database and contains 
         /// methods to set and get properties of objects.
         /// </returns>
-        public TableMapping GetMapping(Type type, CreateFlags createFlags = CreateFlags.None)
+        public TableMapping GetMapping(Type type, string contextName = null, CreateFlags createFlags = CreateFlags.None)
         {
             if (_mappings == null)
             {
                 _mappings = new Dictionary<string, TableMapping>();
             }
             TableMapping map;
+            string tableName = (contextName ?? "") + type.FullName;
             if (!_mappings.TryGetValue(type.FullName, out map))
             {
-                map = new StandardTableMapping(type, TableMappingConfiguration, createFlags);
-                _mappings[type.FullName] = map;
+                map = new StandardTableMapping(type, TableMappingConfiguration, contextName, createFlags);
+                _mappings[tableName] = map;
             }
             return map;
         }
@@ -288,7 +289,7 @@ namespace SQLite
         /// <returns>
         /// The number of entries added to the database schema.
         /// </returns>
-        public int CreateTable(Type ty, CreateFlags createFlags = CreateFlags.None)
+        public int CreateTable(Type ty, string contextName = null, CreateFlags createFlags = CreateFlags.None)
         {
             if (_tables == null)
             {
@@ -297,7 +298,7 @@ namespace SQLite
             TableMapping map;
             if (!_tables.TryGetValue(ty.FullName, out map))
             {
-                map = GetMapping(ty, createFlags);
+                map = GetMapping(ty, contextName, createFlags);
                 _tables.Add(ty.FullName, map);
             }
 

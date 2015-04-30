@@ -20,12 +20,13 @@ namespace SQLite.ORM
     public class StandardTableMapping : AbstractTableMapping
     {
         public StandardTableMapping(Type type, TableMappingConfiguration configuration,
+            string contextName = null,
             CreateFlags createFlags = CreateFlags.None)
         {
             MappedType = type;
 
 			var tableAttr = TableAttributeCollectorFactory.Create().GetAttributesForType(type);
-            TableName = tableAttr != null ? tableAttr.Name : MappedType.Name;
+            TableName = (contextName ?? "") + (tableAttr != null ? tableAttr.Name : MappedType.Name);
 
             Columns = ORMUtilities.GetColumnsOnType(type, configuration, createFlags, "");
 

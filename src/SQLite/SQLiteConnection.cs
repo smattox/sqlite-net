@@ -217,7 +217,8 @@ namespace SQLite
                 _mappings = new Dictionary<string, TableMapping>();
             }
             TableMapping map;
-            string tableName = (contextName ?? "") + type.FullName;
+            contextName += !string.IsNullOrEmpty(contextName) ? "." : "";
+            string tableName = contextName + type.FullName;
             if (!_mappings.TryGetValue(type.FullName, out map))
             {
                 map = new StandardTableMapping(type, TableMappingConfiguration, contextName, createFlags);
@@ -233,9 +234,9 @@ namespace SQLite
         /// The mapping represents the schema of the columns of the database and contains 
         /// methods to set and get properties of objects.
         /// </returns>
-        public TableMapping GetMapping<T>()
+        public TableMapping GetMapping<T>(string contextName = null)
         {
-            return GetMapping(typeof(T));
+            return GetMapping(typeof(T), contextName);
         }
 
         private struct IndexedColumn
@@ -273,9 +274,9 @@ namespace SQLite
         /// <returns>
         /// The number of entries added to the database schema.
         /// </returns>
-        public int CreateTable<T>(CreateFlags createFlags = CreateFlags.None)
+        public int CreateTable<T>(string contextName = null, CreateFlags createFlags = CreateFlags.None)
         {
-            return CreateTable(typeof(T), createFlags);
+            return CreateTable(typeof(T), contextName, createFlags);
         }
 
         /// <summary>

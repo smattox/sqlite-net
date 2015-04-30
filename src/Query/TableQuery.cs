@@ -35,10 +35,10 @@ namespace SQLite.Query
             Table = table;
         }
 
-        public TableQuery(SQLiteConnection conn)
+        public TableQuery(SQLiteConnection conn, string contextName = null)
         {
             Connection = conn;
-            Table = Connection.GetMapping(typeof(T));
+            Table = Connection.GetMapping(typeof(T), contextName);
         }
 
         public TableQuery<U> Clone<U>()

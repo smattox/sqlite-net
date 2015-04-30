@@ -28,6 +28,14 @@ namespace SQLite.ORM.Columns
             connection.CreateTable(listContainerType, path, createFlags);
         }
 
+        public override bool CanWrite
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override object GetValue(object target)
         {
             var baseMethod = this.GetType().GetRuntimeMethods().First(mi => mi.Name.Equals("GetTargetValue"));

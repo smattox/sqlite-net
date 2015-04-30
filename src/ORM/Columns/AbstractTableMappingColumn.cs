@@ -29,6 +29,8 @@ namespace SQLite.ORM.Columns
 
         public IEnumerable<IndexedAttribute> Indices { get; set; }
 
+        public abstract bool CanWrite { get; }
+
         protected string Path { get; set; }
 
         protected AbstractTableMappingColumn(MemberInfo info, string path, CreateFlags createFlags = CreateFlags.None)

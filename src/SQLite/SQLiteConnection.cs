@@ -1398,15 +1398,22 @@ namespace SQLite
                 throw new NotSupportedException("Cannot update " + map.TableName + ": it has no PK");
             }
 
+            var primaryKeyValue = pk.GetValue(obj);
             var cols = from p in map.Columns
-                       where p != pk
+                       where p != pk && p.CanWrite
                        select p;
             var vals = from c in cols
                        select c.GetValue(obj);
             var ps = new List<object>(vals);
             ps.Add(pk.GetValue(obj));
-            var q = string.Format("update \"{0}\" set {1} where {2} = ? ", map.TableName, string.Join(",", (from c in cols
-                                                                                                            select "\"" + c.Name + "\" = ? ").ToArray()), pk.Name);
+            var args = new List<string>();
+            for (int i = 0; i != cols.Count(); i++)
+            {
+                var colName = cols.ToArray()[i].Name;
+                var valName = vals.ToArray()[i];
+                args.Add("\"" + colName + "\" = " + valName + " ");
+            }
+            var q = string.Format("update \"{0}\" set {1} where {2} = {3} ", map.TableName, string.Join(",", args.ToArray()), pk.Name, primaryKeyValue);
 
             try
             {

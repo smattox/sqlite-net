@@ -26,6 +26,8 @@ namespace SQLite.ORM.Columns
 
         int? MaxStringLength { get; }
 
+        bool CanWrite { get; }
+
         void SetValue(object obj, object val);
 
         IEnumerable<IndexedAttribute> Indices { get; set; }

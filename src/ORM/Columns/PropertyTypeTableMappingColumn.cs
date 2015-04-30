@@ -20,6 +20,14 @@ namespace SQLite.ORM.Columns
             TargetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
         }
 
+        public override bool CanWrite
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override void SetValue(object obj, object val)
         {
             _prop.SetValue(obj, val, null);

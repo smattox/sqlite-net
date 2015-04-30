@@ -31,9 +31,7 @@ namespace SQLite.ORM.Columns
 
         protected AbstractTableMappingColumn(MemberInfo info, string path, CreateFlags createFlags = CreateFlags.None)
         {
-            var colAttr = (ColumnAttribute)info.GetCustomAttributes(typeof(ColumnAttribute), true).FirstOrDefault();
-
-            Name = path + (colAttr == null ? info.Name : colAttr.Name);
+            Name = path + ORMUtilities.GetColumnName(info);
             Collation = ORMUtilities.Collation(info);
 
             IsPK = ORMUtilities.IsPrimaryKey(info) ||

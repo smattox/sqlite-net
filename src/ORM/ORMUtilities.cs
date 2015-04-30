@@ -75,6 +75,13 @@ namespace SQLite.ORM
             return SQLite3.GetSQLiteType(clrType) != null;
         }
 
+        public static string GetColumnName(MemberInfo info)
+        {
+            var colAttr = (ColumnAttribute)info.GetCustomAttributes(typeof(ColumnAttribute), true).FirstOrDefault();
+
+            return (colAttr == null ? info.Name : colAttr.Name);
+        }
+
         public static bool IsPrimaryKey(MemberInfo info)
         {
             return ORMUtilitiesHelperFactory.Create().GetAttribute<PrimaryKeyAttribute>(info) != null;

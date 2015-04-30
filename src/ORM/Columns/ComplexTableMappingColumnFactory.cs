@@ -11,6 +11,13 @@ namespace SQLite.ORM.Columns
     public class ComplexTableMappingColumnFactory : TableMappingColumnFactory
     {
         private BasicTableMappingColumnFactory simpleTypesFactory = new BasicTableMappingColumnFactory();
+        private SQLiteConnection connection;
+
+        public ComplexTableMappingColumnFactory(SQLiteConnection connection)
+        {
+            this.connection = connection;
+        }
+
 
         public TableMappingColumn[] CreateColumnsOnMember(MemberInfo info, TableMappingConfiguration configuration, CreateFlags flags, string path)
         {
@@ -26,6 +33,16 @@ namespace SQLite.ORM.Columns
             }
 
             path += ORMUtilities.GetColumnName(info);
+
+            if (targetType.GetTypeInfo().IsGenericType &&
+                targetType.GetGenericTypeDefinition().GetTypeInfo().ImplementedInterfaces.Any(intface => intface.FullName == typeof(ICollection<>).ToString()))
+            {
+                if (targetType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return new TableMappingColumn[] { new ListAdapterTableMappingColumn(info, targetType, path, connection, flags) };
+                }
+                throw new InvalidOperationException("Collection type " + targetType.Name + " is not supported.");
+            }
 
             return ORMUtilities.GetColumnsOnType(targetType, configuration, flags, path);
         }

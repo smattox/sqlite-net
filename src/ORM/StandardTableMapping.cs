@@ -26,8 +26,9 @@ namespace SQLite.ORM
             MappedType = type;
 
             TableName = contextName + ORMUtilities.GetTableName(MappedType);
+            string path = string.IsNullOrEmpty(contextName) ? "" : contextName;
 
-            Columns = ORMUtilities.GetColumnsOnType(type, configuration, createFlags, "");
+            Columns = ORMUtilities.GetColumnsOnType(type, configuration, createFlags, path);
 
             _autoPk = Columns.FirstOrDefault(column => column.IsAutoInc && column.IsPK);
             PrimaryKey = Columns.FirstOrDefault(column => column.IsPK);

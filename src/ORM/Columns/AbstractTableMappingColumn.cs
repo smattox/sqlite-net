@@ -29,9 +29,12 @@ namespace SQLite.ORM.Columns
 
         public IEnumerable<IndexedAttribute> Indices { get; set; }
 
+        protected string Path { get; set; }
+
         protected AbstractTableMappingColumn(MemberInfo info, string path, CreateFlags createFlags = CreateFlags.None)
         {
             Name = path + ORMUtilities.GetColumnName(info);
+            Path = path;
             Collation = ORMUtilities.Collation(info);
 
             IsPK = ORMUtilities.IsPrimaryKey(info) ||
@@ -53,6 +56,16 @@ namespace SQLite.ORM.Columns
             }
             IsNullable = !(IsPK || ORMUtilities.IsMarkedNotNull(info));
             MaxStringLength = ORMUtilities.MaxStringLength(info);
+        }
+
+        protected object GetTargetObject(object source)
+        {
+            string[] references = Path.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i != references.Length; i++)
+            {
+                source = ORMUtilities.GetMemberValue(source, references[i]);
+            }
+            return source;
         }
 
         public abstract void SetValue(object obj, object val);

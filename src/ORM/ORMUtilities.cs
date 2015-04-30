@@ -62,6 +62,11 @@ namespace SQLite.ORM
 
         public static string SqlType(Type clrType, int? maxLength = DefaultMaxStringLength, bool storeDateTimeAsTicks = false)
         {
+            if (clrType == null)
+            {
+                return null;
+            }
+
             var type = SQLite3.GetSQLiteType(clrType);
 
             if (type != null)
@@ -131,6 +136,32 @@ namespace SQLite.ORM
         public static bool IsMarkedNotNull(MemberInfo info)
         {
             return ORMUtilitiesHelperFactory.Create().GetAttribute<NotNullAttribute>(info) != null;
+        }
+
+        public static object GetMemberValue(object obj, string name)
+        {
+            var property = obj.GetType().GetRuntimeProperty(name);
+            if (property != null)
+                return property.GetValue(obj);
+
+            var field = obj.GetType().GetRuntimeField(name);
+            if (field != null)
+                return field.GetValue(obj);
+
+            throw new InvalidOperationException(obj.GetType().FullName + " has no member " + name);
+        }
+
+        public static object GetValueFromMember(MemberInfo info, object obj)
+        {
+            if (info is PropertyInfo)
+            {
+                return (info as PropertyInfo).GetValue(obj);
+            }
+            if (info is FieldInfo)
+            {
+                return (info as FieldInfo).GetValue(obj);
+            }
+            throw new InvalidOperationException("Confusion; " + info.Name + " is neither property or field.");
         }
     }
 }

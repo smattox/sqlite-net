@@ -20,7 +20,7 @@ namespace SQLite.ORM
 
         public bool IsEnum(Type type)
         {
-            return type.GetTypeInfo().IsEnum;
+            return type != null && type.GetTypeInfo().IsEnum;
         }
     }
 }

@@ -22,11 +22,13 @@ namespace SQLite.ORM.Columns
 
         public override void SetValue(object obj, object val)
         {
+            obj = GetTargetObject(obj);
             _field.SetValue(obj, val);
         }
 
         public override object GetValue(object obj)
         {
+            obj = GetTargetObject(obj);
             return _field.GetValue(obj);
         }
     }

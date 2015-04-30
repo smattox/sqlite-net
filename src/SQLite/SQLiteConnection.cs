@@ -217,8 +217,7 @@ namespace SQLite
                 _mappings = new Dictionary<string, TableMapping>();
             }
             TableMapping map;
-            contextName += !string.IsNullOrEmpty(contextName) ? "." : "";
-            string tableName = contextName + type.FullName;
+            string tableName = (!string.IsNullOrEmpty(contextName) ? contextName + "." : "") + type.FullName;
             if (!_mappings.TryGetValue(type.FullName, out map))
             {
                 map = new StandardTableMapping(type, TableMappingConfiguration, contextName, createFlags);

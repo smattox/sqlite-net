@@ -237,7 +237,10 @@ namespace SQLite.SQL
                 }
 
                 var SQLiteType = SQLite3.GetSQLiteType(b.Value.GetType());
-                SQLiteType.Bind(stmt, b.Index, b.Value, _conn.StoreDateTimeAsTicks);
+                if (SQLiteType != null)
+                {
+                    SQLiteType.Bind(stmt, b.Index, b.Value, _conn.StoreDateTimeAsTicks);
+                }
             }
         }
 

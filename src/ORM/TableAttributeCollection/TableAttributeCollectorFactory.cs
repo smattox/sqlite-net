@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.TableAttributeCollection
 {
-    public class TableAttributeCollectorFactory
+    public static class TableAttributeCollectorFactory
     {
-        public TableAttributeCollector Create()
+        public static TableAttributeCollector Create()
         {
 #if USE_NEW_REFLECTION_API
             return new NewReflectionAPITableAttributeCollector();

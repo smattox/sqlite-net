@@ -1,4 +1,5 @@
 ﻿using SQLite.ORM.Columns;
+using SQLite.ORM.TableAttributeCollection;
 using SQLite.SQLite;
 using System;
 using System.Collections.Generic;
@@ -73,6 +74,12 @@ namespace SQLite.ORM
         public static bool IsSimpleSQLType(Type clrType)
         {
             return SQLite3.GetSQLiteType(clrType) != null;
+        }
+
+        public static string GetTableName(Type type)
+        {
+            var tableAttr = TableAttributeCollectorFactory.Create().GetAttributesForType(type);
+            return tableAttr != null ? tableAttr.Name : type.Name;
         }
 
         public static string GetColumnName(MemberInfo info)

@@ -25,8 +25,7 @@ namespace SQLite.ORM
         {
             MappedType = type;
 
-			var tableAttr = TableAttributeCollectorFactory.Create().GetAttributesForType(type);
-            TableName = contextName + (tableAttr != null ? tableAttr.Name : MappedType.Name);
+            TableName = contextName + ORMUtilities.GetTableName(MappedType);
 
             Columns = ORMUtilities.GetColumnsOnType(type, configuration, createFlags, "");
 

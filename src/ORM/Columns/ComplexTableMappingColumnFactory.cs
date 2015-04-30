@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,12 +22,10 @@ namespace SQLite.ORM.Columns
             path += path.Length > 0 ? "." : "";
             if (ORMUtilities.IsSimpleSQLType(targetType))
             {
-                
                 return simpleTypesFactory.CreateColumnsOnMember(info, configuration, flags, path);
             }
-            // TODO: Get column name instead, if available?
-            path += info.Name;
-            // TODO: Handle special case of collections
+
+            path += ORMUtilities.GetColumnName(info);
 
             return ORMUtilities.GetColumnsOnType(targetType, configuration, flags, path);
         }

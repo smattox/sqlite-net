@@ -69,7 +69,7 @@ namespace SQLite.ORM
         {
             get
             {
-                return (DirectTableMappingColumn[])Columns.Where(column => column is DirectTableMappingColumn);
+                return Columns.Where(col => col is DirectTableMappingColumn).Select(col => col as DirectTableMappingColumn).ToArray();
             }
         }
 
@@ -77,7 +77,7 @@ namespace SQLite.ORM
         {
             get
             {
-                return (IndirectTableMappingColumn[])Columns.Where(column => column is IndirectTableMappingColumn);
+                return Columns.Where(col => col is IndirectTableMappingColumn).Select(col => col as IndirectTableMappingColumn).ToArray();
             }
         }
 

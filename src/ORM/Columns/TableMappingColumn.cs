@@ -14,24 +14,6 @@ namespace SQLite.ORM.Columns
 
         string TargetName { get; }
 
-        bool IsAutoInc { get; }
-
-        bool IsPK { get; }
-
-        bool IsNullable { get; }
-
-        bool IsAutoGuid { get; }
-
-        string Collation { get; }
-
-        int? MaxStringLength { get; }
-
-        bool IsDirectWrite { get; }
-
-        void SetValue(object obj, object val);
-
         IEnumerable<IndexedAttribute> Indices { get; set; }
-
-        object GetValue(object obj);
     }
 }

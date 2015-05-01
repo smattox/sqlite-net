@@ -31,7 +31,7 @@ namespace SQLite.ORM
             return tableColumns.ToArray();
         }
 
-        public static string SqlDecl(TableMappingColumn p, bool storeDateTimeAsTicks)
+        public static string SqlDecl(DirectTableMappingColumn p, bool storeDateTimeAsTicks)
         {
             string decl = "\"" + p.Name + "\" " + SqlType(p, storeDateTimeAsTicks) + " ";
 
@@ -55,7 +55,7 @@ namespace SQLite.ORM
             return decl;
         }
 
-        public static string SqlType(TableMappingColumn column, bool storeDateTimeAsTicks = false)
+        public static string SqlType(DirectTableMappingColumn column, bool storeDateTimeAsTicks = false)
         {
             return SqlType(column.TargetType, column.MaxStringLength, storeDateTimeAsTicks);
         }

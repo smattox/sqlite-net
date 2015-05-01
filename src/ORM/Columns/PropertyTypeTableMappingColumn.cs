@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns
 {
-    public class PropertyTypeTableMappingColumn : AbstractTableMappingColumn
+    public class PropertyTypeTableMappingColumn : AbstractDirectTableMappingColumn
     {
         private PropertyInfo _prop;
 
@@ -18,14 +18,6 @@ namespace SQLite.ORM.Columns
 
             //If this type is Nullable<T> then Nullable.GetUnderlyingType returns the T, otherwise it returns null, so get the actual type instead
             TargetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-        }
-
-        public override bool IsDirectWrite
-        {
-            get
-            {
-                return true;
-            }
         }
 
         public override void SetValue(object obj, object val)

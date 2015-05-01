@@ -132,12 +132,15 @@ namespace SQLite.SQL
                     {
                         // TODO: Disabling on CanWrite here is temporary until we have
                         // accessing container subtables down
-                        if (cols[i] == null || !cols[i].IsDirectWrite)
+                        if (cols[i] == null)
                             continue;
-                        var colType = SQLite3.ColumnType(stmt, i);
-                        var colSQLiteType = SQLite3.GetSQLiteType(cols[i].TargetType);
-                        var val = colSQLiteType.Read(stmt, i, _conn.StoreDateTimeAsTicks);
-                        cols[i].SetValue(obj, val);
+                        if (cols[i] is DirectTableMappingColumn)
+                        {
+                            var colType = SQLite3.ColumnType(stmt, i);
+                            var colSQLiteType = SQLite3.GetSQLiteType(cols[i].TargetType);
+                            var val = colSQLiteType.Read(stmt, i, _conn.StoreDateTimeAsTicks);
+                            (cols[i] as DirectTableMappingColumn).SetValue(obj, val);
+                        }
                     }
                     OnInstanceCreated(obj);
                     yield return (T)obj;

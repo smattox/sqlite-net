@@ -30,8 +30,8 @@ namespace SQLite.ORM
 
             Columns = ORMUtilities.GetColumnsOnType(type, configuration, createFlags, path);
 
-            _autoPk = Columns.FirstOrDefault(column => column.IsAutoInc && column.IsPK);
-            PrimaryKey = Columns.FirstOrDefault(column => column.IsPK);
+            _autoPk = DirectColumns.FirstOrDefault(column => column.IsAutoInc && column.IsPK);
+            PrimaryKey = DirectColumns.FirstOrDefault(column => column.IsPK);
 
             if (PrimaryKey != null)
             {

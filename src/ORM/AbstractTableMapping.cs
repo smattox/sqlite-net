@@ -29,13 +29,13 @@ namespace SQLite.ORM
 
         public TableMappingColumn[] Columns { get; protected set; }
 
-        public TableMappingColumn PrimaryKey { get; protected set; }
+        public DirectTableMappingColumn PrimaryKey { get; protected set; }
 
         public string GetByPrimaryKeySql { get; protected set; }
 
         protected ConcurrentStringDictionary _insertCommandMap;
 
-        protected TableMappingColumn _autoPk;
+        protected DirectTableMappingColumn _autoPk;
 
         protected TableMappingColumn[] _insertColumns;
         public TableMappingColumn[] InsertColumns
@@ -44,7 +44,8 @@ namespace SQLite.ORM
             {
                 if (_insertColumns == null)
                 {
-                    _insertColumns = Columns.Where(c => !c.IsAutoInc).ToArray();
+                    _insertColumns = Columns.Where(c => c is DirectTableMappingColumn &&
+                        !(c as DirectTableMappingColumn).IsAutoInc).ToArray();
                 }
                 return _insertColumns;
             }
@@ -61,6 +62,22 @@ namespace SQLite.ORM
                     _insertOrReplaceColumns = Columns.ToArray();
                 }
                 return _insertOrReplaceColumns;
+            }
+        }
+
+        public DirectTableMappingColumn[] DirectColumns
+        {
+            get
+            {
+                return (DirectTableMappingColumn[])Columns.Where(column => column is DirectTableMappingColumn);
+            }
+        }
+
+        public IndirectTableMappingColumn[] IndirectColumns
+        {
+            get
+            {
+                return (IndirectTableMappingColumn[])Columns.Where(column => column is IndirectTableMappingColumn);
             }
         }
 
@@ -110,9 +127,9 @@ namespace SQLite.ORM
 
         PreparedSqlLiteInsertCommand CreateInsertCommand(SQLiteConnection conn, string extra)
         {
-            var cols = InsertColumns.Where(column => column.IsDirectWrite);
+            var cols = InsertColumns.Where(column => column is DirectTableMappingColumn);
             string insertSql;
-            if (!cols.Any() && Columns.Count() == 1 && Columns[0].IsAutoInc)
+            if (!cols.Any() && DirectColumns.Count() == 1 && DirectColumns[0].IsAutoInc)
             {
                 insertSql = string.Format("insert {1} into \"{0}\" default values", TableName, extra);
             }
@@ -122,7 +139,7 @@ namespace SQLite.ORM
 
                 if (replacing)
                 {
-                    cols = InsertOrReplaceColumns.Where(column => column.IsDirectWrite);
+                    cols = InsertOrReplaceColumns.Where(column => column is DirectTableMappingColumn);
                 }
 
                 insertSql = string.Format("insert {3} into \"{0}\"({1}) values ({2})", TableName,

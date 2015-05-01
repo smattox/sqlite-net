@@ -38,14 +38,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\ORM\AbstractTableMapping.cs" />
+    <Compile Include="src\ORM\Columns\AbstractDirectTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\AbstractTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\BasicTableMappingColumnFactory.cs" />
     <Compile Include="src\ORM\Columns\ComplexTableMappingColumnFactory.cs" />
+    <Compile Include="src\ORM\Columns\DirectTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\FieldTypeTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\FieldCollection\FieldCollector.cs" />
     <Compile Include="src\ORM\Columns\FieldCollection\FieldCollectorFactory.cs" />
     <Compile Include="src\ORM\Columns\FieldCollection\NewAPIFieldCollector.cs" />
     <Compile Include="src\ORM\Columns\FieldCollection\NullFieldCollector.cs" />
+    <Compile Include="src\ORM\Columns\IndirectTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\ListAdapterTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\NewAPIPropertyAttributeChecker.cs" />
     <Compile Include="src\ORM\Columns\PropertyAttributeChecker\OldAPIPropertyAttributeChecker.cs" />

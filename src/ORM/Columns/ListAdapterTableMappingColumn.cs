@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns
 {
-    public class ListAdapterTableMappingColumn : AbstractTableMappingColumn
+    public class ListAdapterTableMappingColumn : AbstractTableMappingColumn, IndirectTableMappingColumn
     {
         private Type listType;
         private Type listContainerType;
+        private string targetTable;
 
         private SQLiteConnection connection;
         private string path;
@@ -28,41 +29,34 @@ namespace SQLite.ORM.Columns
             connection.CreateTable(listContainerType, path.TrimEnd(new char[] { '.' }), createFlags);
         }
 
-        public override bool IsDirectWrite
+        public object LoadValueFromDatabase(object target)
         {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override object GetValue(object target)
-        {
-            var baseMethod = this.GetType().GetRuntimeMethods().First(mi => mi.Name.Equals("GetTargetValue"));
+            var baseMethod = this.GetType().GetRuntimeMethods().First(mi => mi.Name.Equals("LoadValue"));
             var method = baseMethod.MakeGenericMethod(listType);
             return method.Invoke(this, new object[] { target });
         }
 
-        private object GetTargetValue<T>(object target) where T : new()
+        private object LoadValue<T>(object target) where T : new()
         {
             long keyValue = GetPrimaryKey(target);
             var query = connection.Table<ListContainer<T>>();
             return query.Where(container => container.MasterKey == keyValue);
         }
 
-        public override void SetValue(object target, object value)
+        public void SaveValueToDatabase(object target)
         {
-            var baseMethod = this.GetType().GetRuntimeMethods().First(mi => mi.Name.Equals("SetTargetValue"));
+            var baseMethod = this.GetType().GetRuntimeMethods().First(mi => mi.Name.Equals("SaveValue"));
             var method = baseMethod.MakeGenericMethod(listType);
-            method.Invoke(this, new object[] { target, value });
+            method.Invoke(this, new object[] { target });
         }
 
-        private void SetTargetValue<T>(object target, object value)
+        private void SaveValue<T>(object target)
         {
             long keyValue = GetPrimaryKey(target);
-            IEnumerable<ListContainer<T>> items = (value as List<T>).Select(item => new ListContainer<T>(keyValue, item));
+            List<T> list = GetTargetObject(target) as List<T>;
+            IEnumerable<ListContainer<T>> items = list.Select(item => new ListContainer<T>(keyValue, item));
 
-            connection.UpdateAll(items);
+            connection.SetData<ListContainer<T>>(items, true, false);
         }
 
         private long GetPrimaryKey(object target)

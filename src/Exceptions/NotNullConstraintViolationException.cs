@@ -24,7 +24,7 @@ namespace SQLite.Exceptions
         {
             if (mapping != null && obj != null)
             {
-                this.Columns = from c in mapping.Columns
+                this.Columns = from c in mapping.DirectColumns
                                where c.IsNullable == false && c.GetValue(obj) == null
                                select c;
             }

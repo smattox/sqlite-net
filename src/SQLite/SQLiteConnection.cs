@@ -312,7 +312,7 @@ namespace SQLite
 
             // Build query.
             var query = "create " + @virtual + "table if not exists \"" + map.TableName + "\" " + @using + "(\n";
-            var decls = map.Columns.Select(p => ORMUtilities.SqlDecl(p, StoreDateTimeAsTicks));
+            var decls = map.DirectColumns.Select(p => ORMUtilities.SqlDecl(p, StoreDateTimeAsTicks));
             var decl = string.Join(",\n", decls.ToArray());
             query += decl;
             query += ")";
@@ -478,9 +478,9 @@ namespace SQLite
         {
             var existingCols = GetTableInfo(map.TableName);
 
-            var toBeAdded = new List<TableMappingColumn>();
+            var toBeAdded = new List<DirectTableMappingColumn>();
 
-            foreach (var p in map.Columns)
+            foreach (var p in map.DirectColumns)
             {
                 var found = false;
                 foreach (var c in existingCols)
@@ -1366,11 +1366,11 @@ namespace SQLite
             
             var replacing = string.Compare(extra, "OR REPLACE", StringComparison.OrdinalIgnoreCase) == 0;
 
-            var cols = (replacing ? map.InsertOrReplaceColumns : map.InsertColumns).Where(col => col.IsDirectWrite).ToArray();
+            var cols = (replacing ? map.InsertOrReplaceColumns : map.InsertColumns).Where(col => col is DirectTableMappingColumn).ToArray();
             var vals = new object[cols.Length];
             for (var i = 0; i < vals.Length; i++)
             {
-                vals[i] = cols[i].GetValue(obj);
+                vals[i] = (cols[i] as DirectTableMappingColumn).GetValue(obj);
             }
 
             var insertCmd = map.GetInsertCommand(this, extra);
@@ -1457,8 +1457,8 @@ namespace SQLite
             }
 
             var primaryKeyValue = pk.GetValue(obj);
-            var cols = from p in map.Columns
-                       where p != pk && p.IsDirectWrite
+            var cols = from p in map.DirectColumns
+                       where p != pk
                        select p;
             var vals = from c in cols
                        select c.GetValue(obj);

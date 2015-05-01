@@ -16,7 +16,11 @@ namespace SQLite.ORM
 
         TableMappingColumn[] Columns { get; }
 
-        TableMappingColumn PrimaryKey { get; }
+        DirectTableMappingColumn[] DirectColumns { get; }
+
+        IndirectTableMappingColumn[] IndirectColumns { get; }
+
+        DirectTableMappingColumn PrimaryKey { get; }
 
         string GetByPrimaryKeySql { get; }
 

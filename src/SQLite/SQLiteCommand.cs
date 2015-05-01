@@ -132,7 +132,7 @@ namespace SQLite.SQL
                     {
                         // TODO: Disabling on CanWrite here is temporary until we have
                         // accessing container subtables down
-                        if (cols[i] == null || !cols[i].CanWrite)
+                        if (cols[i] == null || !cols[i].IsDirectWrite)
                             continue;
                         var colType = SQLite3.ColumnType(stmt, i);
                         var colSQLiteType = SQLite3.GetSQLiteType(cols[i].TargetType);

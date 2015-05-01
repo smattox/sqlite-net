@@ -20,7 +20,7 @@ namespace SQLite.ORM.Columns
             TargetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
         }
 
-        public override bool CanWrite
+        public override bool IsDirectWrite
         {
             get
             {

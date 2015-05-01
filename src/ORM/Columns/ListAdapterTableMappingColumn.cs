@@ -28,7 +28,7 @@ namespace SQLite.ORM.Columns
             connection.CreateTable(listContainerType, path.TrimEnd(new char[] { '.' }), createFlags);
         }
 
-        public override bool CanWrite
+        public override bool IsDirectWrite
         {
             get
             {

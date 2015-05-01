@@ -26,7 +26,7 @@ namespace SQLite.ORM.Columns
 
         int? MaxStringLength { get; }
 
-        bool CanWrite { get; }
+        bool IsDirectWrite { get; }
 
         void SetValue(object obj, object val);
 

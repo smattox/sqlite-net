@@ -110,7 +110,7 @@ namespace SQLite.ORM
 
         PreparedSqlLiteInsertCommand CreateInsertCommand(SQLiteConnection conn, string extra)
         {
-            var cols = InsertColumns.Where(column => column.CanWrite);
+            var cols = InsertColumns.Where(column => column.IsDirectWrite);
             string insertSql;
             if (!cols.Any() && Columns.Count() == 1 && Columns[0].IsAutoInc)
             {
@@ -122,7 +122,7 @@ namespace SQLite.ORM
 
                 if (replacing)
                 {
-                    cols = InsertOrReplaceColumns.Where(column => column.CanWrite);
+                    cols = InsertOrReplaceColumns.Where(column => column.IsDirectWrite);
                 }
 
                 insertSql = string.Format("insert {3} into \"{0}\"({1}) values ({2})", TableName,

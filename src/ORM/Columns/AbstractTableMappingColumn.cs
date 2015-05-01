@@ -29,7 +29,7 @@ namespace SQLite.ORM.Columns
 
         public IEnumerable<IndexedAttribute> Indices { get; set; }
 
-        public abstract bool CanWrite { get; }
+        public abstract bool IsDirectWrite { get; }
 
         protected string Path { get; set; }
 

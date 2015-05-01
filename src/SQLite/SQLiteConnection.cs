@@ -1366,7 +1366,7 @@ namespace SQLite
             
             var replacing = string.Compare(extra, "OR REPLACE", StringComparison.OrdinalIgnoreCase) == 0;
 
-            var cols = (replacing ? map.InsertOrReplaceColumns : map.InsertColumns).Where(col => col.CanWrite).ToArray();
+            var cols = (replacing ? map.InsertOrReplaceColumns : map.InsertColumns).Where(col => col.IsDirectWrite).ToArray();
             var vals = new object[cols.Length];
             for (var i = 0; i < vals.Length; i++)
             {
@@ -1458,7 +1458,7 @@ namespace SQLite
 
             var primaryKeyValue = pk.GetValue(obj);
             var cols = from p in map.Columns
-                       where p != pk && p.CanWrite
+                       where p != pk && p.IsDirectWrite
                        select p;
             var vals = from c in cols
                        select c.GetValue(obj);

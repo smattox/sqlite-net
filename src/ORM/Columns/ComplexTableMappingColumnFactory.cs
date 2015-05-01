@@ -32,8 +32,6 @@ namespace SQLite.ORM.Columns
                 return simpleTypesFactory.CreateColumnsOnMember(info, configuration, flags, path);
             }
 
-            path += ORMUtilities.GetColumnName(info);
-
             if (targetType.GetTypeInfo().IsGenericType &&
                 targetType.GetGenericTypeDefinition().GetTypeInfo().ImplementedInterfaces.Any(intface => intface.FullName == typeof(ICollection<>).ToString()))
             {
@@ -43,6 +41,8 @@ namespace SQLite.ORM.Columns
                 }
                 throw new InvalidOperationException("Collection type " + targetType.Name + " is not supported.");
             }
+
+            path += ORMUtilities.GetColumnName(info);
 
             return ORMUtilities.GetColumnsOnType(targetType, configuration, flags, path);
         }

@@ -65,7 +65,12 @@ namespace SQLite.ORM.Columns
             string[] references = Path.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i != references.Length; i++)
             {
-                source = ORMUtilities.GetMemberValue(source, references[i]);
+                object newSource = ORMUtilities.GetMemberValue(source, references[i]);
+                if (newSource == null)
+                {
+                    newSource = ORMUtilities.InstantiateMember(source, references[i]);
+                }
+                source = newSource;
             }
             return source;
         }

@@ -130,7 +130,9 @@ namespace SQLite.SQL
                     var obj = Activator.CreateInstance(map.MappedType);
                     for (int i = 0; i < cols.Length; i++)
                     {
-                        if (cols[i] == null)
+                        // TODO: Disabling on CanWrite here is temporary until we have
+                        // accessing container subtables down
+                        if (cols[i] == null || !cols[i].CanWrite)
                             continue;
                         var colType = SQLite3.ColumnType(stmt, i);
                         var colSQLiteType = SQLite3.GetSQLiteType(cols[i].TargetType);

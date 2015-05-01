@@ -30,11 +30,13 @@ namespace SQLite.ORM.Columns
 
         public override void SetValue(object obj, object val)
         {
+            obj = GetTargetObject(obj);
             _prop.SetValue(obj, val, null);
         }
 
         public override object GetValue(object obj)
         {
+            obj = GetTargetObject(obj);
             return _prop.GetValue(obj, null);
         }
     }

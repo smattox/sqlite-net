@@ -25,7 +25,7 @@ namespace SQLite.ORM.Columns
 
             listContainerType = typeof(ListContainer<>).MakeGenericType(listType);
 
-            connection.CreateTable(listContainerType, path, createFlags);
+            connection.CreateTable(listContainerType, path.TrimEnd(new char[] { '.' }), createFlags);
         }
 
         public override bool CanWrite
@@ -67,20 +67,7 @@ namespace SQLite.ORM.Columns
 
         private long GetPrimaryKey(object target)
         {
-            var properties = connection.TableMappingConfiguration.PropertyCollector.Collect(target.GetType());
-            var fields = connection.TableMappingConfiguration.FieldCollector.Collect(target.GetType());
-
-            List<MemberInfo> infoList = new List<MemberInfo>();
-            infoList.AddRange(properties);
-            infoList.AddRange(fields);
-
-            MemberInfo primaryKeyInfo = infoList.FirstOrDefault(info => ORMUtilitiesHelperFactory.Create().GetAttribute<PrimaryKeyAttribute>(info) != null);
-
-            if (primaryKeyInfo == null)
-                throw new InvalidOperationException("Parent type of list must have a primary key.");
-
-            var result = ORMUtilities.GetValueFromMember(primaryKeyInfo, target);
-            return Convert.ToInt64(result);        
+            return ORMUtilities.GetPrimaryKey(target, connection.TableMappingConfiguration);
         }
 
         private class ListContainer<T>

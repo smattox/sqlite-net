@@ -29,6 +29,7 @@ using SQLite.SQL;
 using SQLite.Exceptions;
 using SQLite.ORM.Columns;
 using SQLite.SQLite;
+using System.Collections;
 #endif
 
 namespace SQLite
@@ -1060,6 +1061,29 @@ namespace SQLite
             }
         }
 
+        public void SetData<T>(IEnumerable<T> objects, bool clear = true, bool runinTransaction = true) where T : new()
+        {
+            if (clear)
+            {
+                DeleteAll<T>();
+            }
+            else
+            {
+                var allExistingItems = Table<T>().ToList();
+                var expiredItems = allExistingItems.Where(item =>
+                    {
+                        long key = ORMUtilities.GetPrimaryKey(item, TableMappingConfiguration);
+                        return !objects.Any(newItem => key == ORMUtilities.GetPrimaryKey(newItem, TableMappingConfiguration));
+                    });
+                foreach (T item in expiredItems)
+                {
+                    Delete(expiredItems);
+                }
+            }
+
+            InsertOrReplaceAll(objects, runinTransaction);
+        }
+
         /// <summary>
         /// Inserts all specified objects.
         /// </summary>
@@ -1089,6 +1113,40 @@ namespace SQLite
                 foreach (var r in objects)
                 {
                     c += Insert(r);
+                }
+            }
+            return c;
+        }
+
+        /// <summary>
+        /// Inserts or replaces all specified objects.
+        /// </summary>
+        /// <param name="objects">
+        /// An <see cref="IEnumerable"/> of the objects to insert.
+        /// <param name="runInTransaction"/>
+        /// A boolean indicating if the inserts should be wrapped in a transaction.
+        /// </param>
+        /// <returns>
+        /// The number of rows added to the table.
+        /// </returns>
+        public int InsertOrReplaceAll(System.Collections.IEnumerable objects, bool runInTransaction = true)
+        {
+            var c = 0;
+            if (runInTransaction)
+            {
+                RunInTransaction(() =>
+                {
+                    foreach (var r in objects)
+                    {
+                        c += InsertOrReplace(r);
+                    }
+                });
+            }
+            else
+            {
+                foreach (var r in objects)
+                {
+                    c += InsertOrReplace(r);
                 }
             }
             return c;
@@ -1308,7 +1366,7 @@ namespace SQLite
             
             var replacing = string.Compare(extra, "OR REPLACE", StringComparison.OrdinalIgnoreCase) == 0;
 
-            var cols = replacing ? map.InsertOrReplaceColumns : map.InsertColumns;
+            var cols = (replacing ? map.InsertOrReplaceColumns : map.InsertColumns).Where(col => col.CanWrite).ToArray();
             var vals = new object[cols.Length];
             for (var i = 0; i < vals.Length; i++)
             {

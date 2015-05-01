@@ -138,6 +138,34 @@ namespace SQLite.ORM
             return ORMUtilitiesHelperFactory.Create().GetAttribute<NotNullAttribute>(info) != null;
         }
 
+        public static object InstantiateMember(object obj, string name)
+        {
+            MemberInfo info = null;
+            Type memberType = null;
+
+            var property = obj.GetType().GetRuntimeProperty(name);
+            if (property != null)
+            {
+                info = property;
+                memberType = property.PropertyType;
+            }
+
+            var field = obj.GetType().GetRuntimeField(name);
+            if (field != null)
+            {
+                info = field;
+                memberType = field.FieldType;
+            }
+
+            if (memberType != null)
+            {
+                var newInstance = Activator.CreateInstance(memberType);
+                SetMemberValue(obj, info.Name, newInstance);
+                return newInstance;
+            }
+            throw new InvalidOperationException("Don't recognize member " + name + " on " + obj.GetType().FullName);
+        }
+
         public static object GetMemberValue(object obj, string name)
         {
             var property = obj.GetType().GetRuntimeProperty(name);
@@ -147,6 +175,25 @@ namespace SQLite.ORM
             var field = obj.GetType().GetRuntimeField(name);
             if (field != null)
                 return field.GetValue(obj);
+
+            throw new InvalidOperationException(obj.GetType().FullName + " has no member " + name);
+        }
+
+        public static void SetMemberValue(object obj, string name, object value)
+        {
+            var property = obj.GetType().GetRuntimeProperty(name);
+            if (property != null)
+            {
+                property.SetValue(obj, value);
+                return;
+            }
+
+            var field = obj.GetType().GetRuntimeField(name);
+            if (field != null)
+            {
+                field.SetValue(obj, value);
+                return;
+            }
 
             throw new InvalidOperationException(obj.GetType().FullName + " has no member " + name);
         }
@@ -162,6 +209,24 @@ namespace SQLite.ORM
                 return (info as FieldInfo).GetValue(obj);
             }
             throw new InvalidOperationException("Confusion; " + info.Name + " is neither property or field.");
+        }
+
+        public static long GetPrimaryKey(object target, TableMappingConfiguration configuration)
+        {
+            var properties = configuration.PropertyCollector.Collect(target.GetType());
+            var fields = configuration.FieldCollector.Collect(target.GetType());
+
+            List<MemberInfo> infoList = new List<MemberInfo>();
+            infoList.AddRange(properties);
+            infoList.AddRange(fields);
+
+            MemberInfo primaryKeyInfo = infoList.FirstOrDefault(info => ORMUtilitiesHelperFactory.Create().GetAttribute<PrimaryKeyAttribute>(info) != null);
+
+            if (primaryKeyInfo == null)
+                throw new InvalidOperationException("Parent type of list must have a primary key.");
+
+            var result = ORMUtilities.GetValueFromMember(primaryKeyInfo, target);
+            return Convert.ToInt64(result);
         }
     }
 }

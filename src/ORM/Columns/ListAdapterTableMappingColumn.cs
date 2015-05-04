@@ -9,9 +9,11 @@ namespace SQLite.ORM.Columns
 {
     public class ListAdapterTableMappingColumn : AbstractTableMappingColumn, IndirectTableMappingColumn
     {
+        private string listName;
         private Type listType;
         private Type listContainerType;
-        private string targetTable;
+        private string targetTableContext;
+        private string targetTableName;
 
         private SQLiteConnection connection;
         private string path;
@@ -21,12 +23,14 @@ namespace SQLite.ORM.Columns
         {
             this.connection = connection;
             this.path = path;
+            this.listName = info.Name;
 
             listType = targetType.GenericTypeArguments[0];
-
             listContainerType = typeof(ListContainer<>).MakeGenericType(listType);
+            targetTableContext = '[' + info.DeclaringType.AssemblyQualifiedName + ']';
+            targetTableName = targetTableContext + '.' + info.Name;
 
-            connection.CreateTable(listContainerType, path.TrimEnd(new char[] { '.' }), createFlags);
+            connection.CreateTable(listContainerType, targetTableContext, createFlags);
         }
 
         public object LoadValueFromDatabase(object target)
@@ -40,7 +44,7 @@ namespace SQLite.ORM.Columns
         {
             long keyValue = GetPrimaryKey(target);
             var query = connection.Table<ListContainer<T>>();
-            return query.Where(container => container.MasterKey == keyValue);
+            return query.Where(container => container.MasterKey == keyValue).ToList();
         }
 
         public void SaveValueToDatabase(object target)
@@ -53,10 +57,13 @@ namespace SQLite.ORM.Columns
         private void SaveValue<T>(object target)
         {
             long keyValue = GetPrimaryKey(target);
-            List<T> list = GetTargetObject(target) as List<T>;
+            target = GetTargetObject(target);
+            List<T> list = ORMUtilities.GetMemberValue(target, listName) as List<T>;
             IEnumerable<ListContainer<T>> items = list.Select(item => new ListContainer<T>(keyValue, item));
 
-            connection.SetData<ListContainer<T>>(items, true, false);
+            // TODO: SetData is inappropriate here, obviously. We want to 'set' only the items
+            // with a particular key
+            connection.SetData<ListContainer<T>>(items, targetTableContext, true, false);
         }
 
         private long GetPrimaryKey(object target)

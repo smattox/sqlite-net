@@ -219,7 +219,7 @@ namespace SQLite
             }
             TableMapping map;
             string tableName = (!string.IsNullOrEmpty(contextName) ? contextName + "." : "") + type.FullName;
-            if (!_mappings.TryGetValue(type.FullName, out map))
+            if (!_mappings.TryGetValue(tableName, out map))
             {
                 map = new StandardTableMapping(type, TableMappingConfiguration, contextName, createFlags);
                 _mappings[tableName] = map;
@@ -712,9 +712,10 @@ namespace SQLite
         /// A queryable object that is able to translate Where, OrderBy, and Take
         /// queries into native SQL.
         /// </returns>
-        public TableQuery<T> Table<T>() where T : new()
+        public TableQuery<T> Table<T>(string targetTableContext = "") where T : new()
         {
-            return new TableQuery<T>(this);
+            targetTableContext = targetTableContext ?? "";
+            return new TableQuery<T>(this, targetTableContext);
         }
 
         /// <summary>
@@ -1061,15 +1062,16 @@ namespace SQLite
             }
         }
 
-        public void SetData<T>(IEnumerable<T> objects, bool clear = true, bool runinTransaction = true) where T : new()
+        public void SetData<T>(IEnumerable<T> objects, string targetTableContext = "", bool clear = true, bool runinTransaction = true) where T : new()
         {
+            targetTableContext = targetTableContext ?? "";
             if (clear)
             {
-                DeleteAll<T>();
+                DeleteAll<T>(targetTableContext);
             }
             else
             {
-                var allExistingItems = Table<T>().ToList();
+                var allExistingItems = Table<T>(targetTableContext).ToList();
                 var expiredItems = allExistingItems.Where(item =>
                     {
                         long key = ORMUtilities.GetPrimaryKey(item, TableMappingConfiguration);
@@ -1077,11 +1079,11 @@ namespace SQLite
                     });
                 foreach (T item in expiredItems)
                 {
-                    Delete(expiredItems);
+                    Delete(expiredItems, targetTableContext);
                 }
             }
 
-            InsertOrReplaceAll(objects, runinTransaction);
+            InsertOrReplaceAll(objects, targetTableContext, runinTransaction);
         }
 
         /// <summary>
@@ -1129,8 +1131,11 @@ namespace SQLite
         /// <returns>
         /// The number of rows added to the table.
         /// </returns>
-        public int InsertOrReplaceAll(System.Collections.IEnumerable objects, bool runInTransaction = true)
+        public int InsertOrReplaceAll(System.Collections.IEnumerable objects,
+            string targetTableContext = "",
+            bool runInTransaction = true)
         {
+            targetTableContext = targetTableContext ?? "";
             var c = 0;
             if (runInTransaction)
             {
@@ -1138,7 +1143,7 @@ namespace SQLite
                 {
                     foreach (var r in objects)
                     {
-                        c += InsertOrReplace(r);
+                        c += InsertOrReplace(r, targetTableContext);
                     }
                 });
             }
@@ -1146,7 +1151,7 @@ namespace SQLite
             {
                 foreach (var r in objects)
                 {
-                    c += InsertOrReplace(r);
+                    c += InsertOrReplace(r, targetTableContext);
                 }
             }
             return c;
@@ -1260,13 +1265,13 @@ namespace SQLite
         /// <returns>
         /// The number of rows modified.
         /// </returns>
-        public int InsertOrReplace(object obj)
+        public int InsertOrReplace(object obj, string targetTableContext = "")
         {
             if (obj == null)
             {
                 return 0;
             }
-            return Insert(obj, "OR REPLACE", obj.GetType());
+            return Insert(obj, "OR REPLACE", obj.GetType(), targetTableContext);
         }
 
         /// <summary>
@@ -1282,9 +1287,9 @@ namespace SQLite
         /// <returns>
         /// The number of rows added to the table.
         /// </returns>
-        public int Insert(object obj, Type objType)
+        public int Insert(object obj, Type objType, string targetTableContext = "")
         {
-            return Insert(obj, "", objType);
+            return Insert(obj, "", objType, targetTableContext);
         }
 
         /// <summary>
@@ -1303,9 +1308,9 @@ namespace SQLite
         /// <returns>
         /// The number of rows modified.
         /// </returns>
-        public int InsertOrReplace(object obj, Type objType)
+        public int InsertOrReplace(object obj, Type objType, string targetTableContext = "")
         {
-            return Insert(obj, "OR REPLACE", objType);
+            return Insert(obj, "OR REPLACE", objType, targetTableContext);
         }
 
         /// <summary>
@@ -1321,13 +1326,13 @@ namespace SQLite
         /// <returns>
         /// The number of rows added to the table.
         /// </returns>
-        public int Insert(object obj, string extra)
+        public int Insert(object obj, string extra, string targetTableContext = "")
         {
             if (obj == null)
             {
                 return 0;
             }
-            return Insert(obj, extra, obj.GetType());
+            return Insert(obj, extra, obj.GetType(), targetTableContext);
         }
 
         /// <summary>
@@ -1346,15 +1351,15 @@ namespace SQLite
         /// <returns>
         /// The number of rows added to the table.
         /// </returns>
-        public int Insert(object obj, string extra, Type objType)
+        public int Insert(object obj, string extra, Type objType, string targetTableContext = "")
         {
             if (obj == null || objType == null)
             {
                 return 0;
             }
 
-
-            var map = GetMapping(objType);
+            targetTableContext = targetTableContext ?? "";
+            var map = GetMapping(objType, targetTableContext);
 
             if (map.PrimaryKey != null && map.HasAutoGuid)
             {
@@ -1371,6 +1376,11 @@ namespace SQLite
             for (var i = 0; i < vals.Length; i++)
             {
                 vals[i] = (cols[i] as DirectTableMappingColumn).GetValue(obj);
+            }
+
+            foreach (IndirectTableMappingColumn column in map.IndirectColumns)
+            {
+                column.SaveValueToDatabase(obj);
             }
 
             var insertCmd = map.GetInsertCommand(this, extra);
@@ -1538,9 +1548,10 @@ namespace SQLite
         /// <returns>
         /// The number of rows deleted.
         /// </returns>
-        public int Delete(object objectToDelete)
+        public int Delete(object objectToDelete, string targetTableContext = "")
         {
-            var map = GetMapping(objectToDelete.GetType());
+            targetTableContext = targetTableContext ?? "";
+            var map = GetMapping(objectToDelete.GetType(), targetTableContext);
             var pk = map.PrimaryKey;
             if (pk == null)
             {
@@ -1591,9 +1602,10 @@ namespace SQLite
         /// <typeparam name='T'>
         /// The type of objects to delete.
         /// </typeparam>
-        public int DeleteAll<T>()
+        public int DeleteAll<T>(string targetTableContext = "")
         {
-            var map = GetMapping(typeof(T));
+            targetTableContext = targetTableContext ?? "";
+            var map = GetMapping(typeof(T), targetTableContext);
             var query = string.Format("delete from \"{0}\"", map.TableName);
             var count = Execute(query);
             if (count > 0)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SQLite.ORM.Columns
@@ -29,7 +30,9 @@ namespace SQLite.ORM.Columns
 
         protected object GetTargetObject(object source)
         {
-            string[] references = Path.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            // hackish
+            string cleanedPath = Regex.Replace(Path, "\\[.+\\]\\.", "");
+            string[] references = cleanedPath.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i != references.Length; i++)
             {
                 object newSource = ORMUtilities.GetMemberValue(source, references[i]);

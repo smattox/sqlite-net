@@ -11,9 +11,7 @@ namespace SQLite.ORM
     {
         public static string GetSimpleAssemblyName(this Type type)
         {
-            string asmName = type.AssemblyQualifiedName;
-            var matches = Regex.Matches(asmName, ",.+\\z");
-            return Regex.Replace(asmName, ",.+\\z", "");
+            return Regex.Replace(type.AssemblyQualifiedName, ",.+\\z", "");
         }
     }
 }

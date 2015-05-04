@@ -43,7 +43,7 @@ namespace SQLite.ORM.Columns
         private object LoadValue<T>(object target) where T : new()
         {
             long keyValue = GetPrimaryKey(target);
-            var query = connection.Table<ListContainer<T>>();
+            var query = connection.Table<ListContainer<T>>(targetTableContext);
             return query.Where(container => container.MasterKey == keyValue).ToList();
         }
 

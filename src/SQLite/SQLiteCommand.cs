@@ -142,6 +142,17 @@ namespace SQLite.SQL
                             (cols[i] as DirectTableMappingColumn).SetValue(obj, val);
                         }
                     }
+                    foreach (IndirectTableMappingColumn column in map.IndirectColumns)
+                    {
+                        try
+                        {
+                            column.LoadValueFromDatabase(obj);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e.ToString());
+                        }
+                    }
                     OnInstanceCreated(obj);
                     yield return (T)obj;
                 }

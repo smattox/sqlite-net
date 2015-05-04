@@ -44,6 +44,7 @@ namespace SQLite.ORM.Columns
             }
             IsNullable = !(IsPK || ORMUtilities.IsMarkedNotNull(info));
             MaxStringLength = ORMUtilities.MaxStringLength(info);
+            TargetName = info.Name;
         }
 
         public abstract object GetValue(object obj);

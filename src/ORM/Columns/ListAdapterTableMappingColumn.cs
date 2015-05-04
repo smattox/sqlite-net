@@ -27,8 +27,8 @@ namespace SQLite.ORM.Columns
 
             listType = targetType.GenericTypeArguments[0];
             listContainerType = typeof(ListContainer<>).MakeGenericType(listType);
-            targetTableContext = '[' + info.DeclaringType.AssemblyQualifiedName + ']';
-            targetTableName = targetTableContext + '.' + info.Name;
+            targetTableContext = info.DeclaringType.GetSimpleAssemblyName();
+            targetTableName = targetTableContext + '.' + listContainerType.GetSimpleAssemblyName();
 
             connection.CreateTable(listContainerType, targetTableContext, createFlags);
         }

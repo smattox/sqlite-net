@@ -61,6 +61,7 @@
     <Compile Include="src\ORM\Columns\PropertyCollection\PropertyCollectorFactory.cs" />
     <Compile Include="src\ORM\Columns\PropertyTypeTableMappingColumn.cs" />
     <Compile Include="src\ORM\Columns\StandardPropertyCollector.cs" />
+    <Compile Include="src\ORM\TypeExtensions.cs" />
     <Compile Include="src\ORM\NewAPIORMUtilitiesHelper.cs" />
     <Compile Include="src\ORM\OldAPIORMUtilitiesHelper.cs" />
     <Compile Include="src\ORM\ORMUtilitiesHelper.cs" />
